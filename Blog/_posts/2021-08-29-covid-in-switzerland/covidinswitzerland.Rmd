@@ -1,0 +1,79 @@
+---
+title: "Covid in Switzerland"
+description: |
+  A short description of the post.
+author:
+  - name: Mengyun Yang
+    url: https://example.com/norajones
+date: 08-29-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r packages, message = FALSE}
+library(here)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(sf)
+library(rworldmap)
+library(leaflet)
+```
+
+```{r read-data}
+covid <- read_csv(here::here("data/COVID19IntCases.csv"))
+```
+
+```{r}
+eu <- covid %>% 
+  filter(geoRegionName %in% c("Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria",
+                          "Croatia", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece",
+                          "Holy See", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Liechtenstein", "Lithuania",
+                          "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia",
+                          "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Serbia", "Slovakia",
+                          "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom")) %>% 
+  group_by(geoRegionName) %>% 
+  summarise(count = sum(entries)) 
+```
+
+```{r, eval=FALSE}
+worldMap <- getMap()
+
+# Select only the index of states member of the E.U.
+indEU <- which(worldMap$NAME%in%eu$geoRegionName)
+
+# Extract longitude and latitude border's coordinates of members states of E.U. 
+europeCoords <- lapply(indEU, function(i){
+  df <- data.frame(worldMap@polygons[[i]]@Polygons[[1]]@coords)
+  df$region =as.character(worldMap$NAME[i])
+  colnames(df) <- list("long", "lat", "region")
+  return(df)
+})
+
+europeCoords <- do.call("rbind", europeCoords)
+
+#join data
+#eu_map <- eu_df %>% 
+  #rename(region = "countriesAndTerritories") %>% 
+  #right_join(europeCoords,
+             #by = "region")
+
+```
+
+```{r, eval = FALSE}
+qpal = colorBin("Reds", eu_map$cases, bins=4)
+
+europeCoords %>% 
+  leaflet() %>%
+  addTiles() %>% 
+  addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal(cases),weight = 1) 
+
+```
+

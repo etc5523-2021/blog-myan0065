@@ -1,5 +1,22 @@
 [
   {
+    "path": "posts/2021-08-29-covid-in-switzerland/",
+    "title": "Covid in Switzerland",
+    "description": "A short description of the post.",
+    "author": [
+      {
+        "name": "Mengyun Yang",
+        "url": "https://example.com/norajones"
+      }
+    ],
+    "date": "2021-08-29",
+    "categories": [],
+    "contents": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "preview": {},
+    "last_modified": "2021-08-30T00:27:23+10:00",
+    "input_file": {}
+  },
+  {
     "path": "posts/welcome/",
     "title": "Welcome to Blog",
     "description": "Welcome to our new blog, Blog. We hope you enjoy \nreading what we have to say!",
