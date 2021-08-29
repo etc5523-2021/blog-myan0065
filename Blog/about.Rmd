@@ -1,0 +1,47 @@
+---
+title: "Mengyun(Jaffie) Yang"
+description: |
+  Some additional details about the blog
+links:
+  - label: LinkedIn
+    url: https://www.linkedin.com/in/mengyun-yang/
+  - label: GitHub
+    url: https://github.com/myan0065
+  - label: Email
+    url: jaffie_yang@hotmail.com
+output:
+  postcards::trestles
+---
+
+## Bio
+
+Hello, I am Jaffie, a performance-driven and self-motivated business analytics postgraduate student with over 5 years’ experience in marketing and 3 years in banking & finance. Currently working towards a master degree in Business Analytics at Monash University. Enjoying overcoming challenges and aiming to apply my data analytic thinking and decision-making skills to solve real-life situations.
+
+<br><br>
+
+## Education
+
+**Monash University** | Melbourne, AU
+Master of Business Analytics | Mar 2021 - Present
+
+**Monash University** | Melbourne, AU
+Bachelor of Business (Banking & Finance) | Mar 2007 - Nov 2010
+
+<br><br>
+
+## Experience
+
+**Marketing and Operations Coordinator** | CBRE | Jan 2019 - Apr 2021<br>
+
+**Sales and Leasing Administrator** | Collins Commercial | Mar 2018 - Dec 2018<br>
+
+**Property Management Administrative Assistant** | Fletcher's Real Estate | Mar 2017 - Mar 2018<br>
+
+**Personal Assistant** | Almas Real Estate | Nov 2015 - Mar 2017<br>
+
+**Mortgage Broker** | Fortune Financial Services | Oct 2012 - Nov 2015<br>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
