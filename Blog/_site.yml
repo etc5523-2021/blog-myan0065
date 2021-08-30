@@ -1,5 +1,5 @@
 name: "jaffie's Blog"
-title: "My Blog"
+title: "Y + MY"
 theme: theme.css
 description: |
   My Blog
@@ -10,6 +10,8 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+    - icon: fab fa-github
+      href: https://github.com/myan0065
 output: 
   distill::distill_article:
     css: styles.css

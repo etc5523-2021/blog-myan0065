@@ -2,7 +2,30 @@ body {
   background-color: #fffbf0;
 }
 
-h1{
-  color:#325c59;
-  
+.distill-site-header .title {
+  font-size: 40px;
+  font-family: 'Open Sans', sans-serif;
+  font-style: italic;
+  font-weight: 800;
+}
+
+.posts-list .posts-list-caption {
+    color: #325c59;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+}
+
+.fa-github-alt:before {
+    content: "\f113";
+}
+
+ul > li::marker {
+  font-size: 1.125em;
+  color: #325c59;
+}
+
+/* Change link appearance */
+d-article a {
+  border-bottom: 1px solid #e98074;
+  text-decoration: none;
 }

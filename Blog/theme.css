@@ -14,7 +14,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&family=Roboto:wght@500&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 html {
   /*-- Main font sizes --*/
@@ -24,16 +26,16 @@ html {
   --aside-size:      12px;
   --fig-cap-size:    13px;
   /*-- Main font colors --*/
-  --title-color:     #000000;
-  --header-color:    rgba(0, 0, 0, 0.8);
-  --body-color:      rgba(0, 0, 0, 0.8);
+  --title-color:     #325c59;
+  --header-color:    #325c59;;
+  --body-color:      #325c59
   --aside-color:     rgba(0, 0, 0, 0.6);
-  --fig-cap-color:   rgba(0, 0, 0, 0.6);
+  --fig-cap-color:   #325c59
   /*-- Specify custom fonts ~~~ must be imported above   --*/
   --heading-font:    'Questrial', sans-serif;
-  --mono-font:       "DM Mono", monospace;
-  --body-font:       "DM Mono", monospace;
-  --navbar-font:     'Roboto', sans-serif; /* websites + blogs only */
+  --mono-font:       'Open Sans', sans-serif;
+  --body-font:       'Open Sans', sans-serif;
+  --navbar-font:     'Open Sans', sans-serif; /* websites + blogs only */
 }
 
 /*-- ARTICLE METADATA --*/
@@ -66,7 +68,7 @@ d-appendix {
   --text-color:       #325c59;
   --text-size:        20px;
   --hover-color:      white;
-  --bkgd-color:       #f9f8f6;
+  --bkgd-color:       #fffbf0;
 }
 
 .distill-site-footer {

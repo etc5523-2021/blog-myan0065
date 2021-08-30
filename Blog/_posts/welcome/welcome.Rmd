@@ -1,10 +1,10 @@
 ---
-title: "Welcome to Blog"
+title: "Welcome to My Blog"
 description: |
-  Welcome to our new blog, Blog. We hope you enjoy 
-  reading what we have to say!
+  Welcome to my new blog, Blog. I hope you enjoy 
+  reading what I have to say!
 author:
-  - name: Nora Jones 
+  - name: Jaffie Yang
     url: https://example.com/norajones
     affiliation: Spacely Sprockets
     affiliation_url: https://example.com/spacelysprokets

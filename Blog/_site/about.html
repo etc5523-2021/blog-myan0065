@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
     <style type="text/css">body {font-family: 'Roboto Slab', serif;}</style>
 
-    <title>Mengyun(Jaffie) Yang</title>
+    <title><span class="fill">Mengyun(Jaffie) Yang</span></title>
 
     
           <!--radix_placeholder_navigation_in_header-->
@@ -628,9 +628,32 @@
             background-color: #fffbf0;
           }
 
-          h1{
-            color:#325c59;
-            
+          .distill-site-header .title {
+            font-size: 40px;
+            font-family: 'Open Sans', sans-serif;
+            font-style: italic;
+            font-weight: 800;
+          }
+
+          .posts-list .posts-list-caption {
+              color: #325c59;
+              font-family: 'Open Sans', sans-serif;
+              font-weight: 400;
+          }
+
+          .fa-github-alt:before {
+              content: "\f113";
+          }
+
+          ul > li::marker {
+            font-size: 1.125em;
+            color: #325c59;
+          }
+
+          /* Change link appearance */
+          d-article a {
+            border-bottom: 1px solid #e98074;
+            text-decoration: none;
           }
           </style>
           <!--/radix_placeholder_site_in_header-->
@@ -734,7 +757,9 @@
           @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&display=swap');
           @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
           @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&family=Roboto:wght@500&display=swap');
-
+          @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
           html {
             /*-- Main font sizes --*/
@@ -744,16 +769,16 @@
             --aside-size:      12px;
             --fig-cap-size:    13px;
             /*-- Main font colors --*/
-            --title-color:     #000000;
-            --header-color:    rgba(0, 0, 0, 0.8);
-            --body-color:      rgba(0, 0, 0, 0.8);
+            --title-color:     #325c59;
+            --header-color:    #325c59;;
+            --body-color:      #325c59
             --aside-color:     rgba(0, 0, 0, 0.6);
-            --fig-cap-color:   rgba(0, 0, 0, 0.6);
+            --fig-cap-color:   #325c59
             /*-- Specify custom fonts ~~~ must be imported above   --*/
             --heading-font:    'Questrial', sans-serif;
-            --mono-font:       "DM Mono", monospace;
-            --body-font:       "DM Mono", monospace;
-            --navbar-font:     'Roboto', sans-serif; /* websites + blogs only */
+            --mono-font:       'Open Sans', sans-serif;
+            --body-font:       'Open Sans', sans-serif;
+            --navbar-font:     'Open Sans', sans-serif; /* websites + blogs only */
           }
 
           /*-- ARTICLE METADATA --*/
@@ -786,7 +811,7 @@
             --text-color:       #325c59;
             --text-size:        20px;
             --hover-color:      white;
-            --bkgd-color:       #f9f8f6;
+            --bkgd-color:       #fffbf0;
           }
 
           .distill-site-footer {
@@ -963,12 +988,15 @@
           <header class="header header--fixed" role="banner">
           <nav class="distill-site-nav distill-site-header">
           <div class="nav-left">
-          <a href="index.html" class="title">My Blog</a>
+          <a href="index.html" class="title">Y + MY</a>
           <input id="distill-search" class="nav-search hidden" type="text" placeholder="Search..."/>
           </div>
           <div class="nav-right">
           <a href="index.html">Home</a>
           <a href="about.html">About</a>
+          <a href="https://github.com/myan0065">
+          <i class="fab fa-github" aria-hidden="true"></i>
+          </a>
           <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
           </div>
           </nav>
@@ -982,10 +1010,10 @@
         <div class="d-flex flex-column col-5 align-items-center text-center align-self-center">
           <div class="mx-auto text-center">
             <div class="p-3">
-              <img src= style="height:15rem" class="rounded">
+              <img src=my.png style="height:15rem" class="rounded">
             </div>
             <div class="p-2">
-              <h1>Mengyun(Jaffie) Yang</h1>
+              <h1><span class="fill">Mengyun(Jaffie) Yang</span></h1>
             </div>
             <hr style="width:60%;"/>
             <div class="p-2">
@@ -1020,24 +1048,52 @@
         <div class="d-flex flex-column vh-100 border-left"></div>
         <div class="d-flex flex-column col px-5 align-items-center align-self-center mh-100" style="overflow-y: scroll;">
           <div class="my-5" id="content">
+            <style type="text/css">
+            body {
+              background-color: #325c59;
+            }
+
+            .distill-site-header {
+              --title-size:       25px;
+              --text-color:       #fffbf0;
+              --text-size:        20px;
+              --hover-color:      white;
+              --bkgd-color:      #325c59;
+            }
+
+            .fill {
+              color: #fffbf0;
+              font-family: 'Roboto', sans-serif;   
+            }
+
+            h2{
+              color:#fffbf0;
+              font-family: "Amiri", serif;
+            }
+
+            .distill-site-header .title {
+              font-size: 40px;
+              font-family: 'Open Sans', sans-serif;
+            }
+            </style>
             <div id="bio" class="section level2">
             <h2>Bio</h2>
-            <p>Hello, I am Jaffie, a performance-driven and self-motivated business analytics postgraduate student with over 5 years’ experience in marketing and 3 years in banking &amp; finance. Currently working towards a master degree in Business Analytics at Monash University. Enjoying overcoming challenges and aiming to apply my data analytic thinking and decision-making skills to solve real-life situations.</p>
+            <p><span class="fill">Hello, I am Jaffie, a performance-driven and self-motivated business analytics postgraduate student with over 5 years’ experience in marketing and 3 years in banking &amp; finance. Currently working towards a master degree in Business Analytics at Monash University. Enjoying overcoming challenges and aiming to apply my data analytic thinking and decision-making skills to solve real-life situations.</span></p>
             <p><br><br></p>
             </div>
             <div id="education" class="section level2">
             <h2>Education</h2>
-            <p><strong>Monash University</strong> | Melbourne, AU Master of Business Analytics | Mar 2021 - Present</p>
-            <p><strong>Monash University</strong> | Melbourne, AU Bachelor of Business (Banking &amp; Finance) | Mar 2007 - Nov 2010</p>
+            <p><span class="fill"><strong>Monash University</strong> | Melbourne, AU Master of Business Analytics | Mar 2021 - Present</span></p>
+            <p><span class="fill"><strong>Monash University</strong> | Melbourne, AU Bachelor of Business (Banking &amp; Finance) | Mar 2007 - Nov 2010</span></p>
             <p><br><br></p>
             </div>
             <div id="experience" class="section level2">
             <h2>Experience</h2>
-            <p><strong>Marketing and Operations Coordinator</strong> | CBRE | Jan 2019 - Apr 2021<br></p>
-            <p><strong>Sales and Leasing Administrator</strong> | Collins Commercial | Mar 2018 - Dec 2018<br></p>
-            <p><strong>Property Management Administrative Assistant</strong> | Fletcher’s Real Estate | Mar 2017 - Mar 2018<br></p>
-            <p><strong>Personal Assistant</strong> | Almas Real Estate | Nov 2015 - Mar 2017<br></p>
-            <p><strong>Mortgage Broker</strong> | Fortune Financial Services | Oct 2012 - Nov 2015<br></p>
+            <p><span class="fill"><strong>Marketing and Operations Coordinator</strong> | CBRE | Jan 2019 - Apr 2021<br></span></p>
+            <p><span class="fill"><strong>Sales and Leasing Administrator</strong> | Collins Commercial | Mar 2018 - Dec 2018<br></span></p>
+            <p><span class="fill"><strong>Property Management Administrative Assistant</strong> | Fletcher’s Real Estate | Mar 2017 - Mar 2018<br></span></p>
+            <p><span class="fill"><strong>Personal Assistant</strong> | Almas Real Estate | Nov 2015 - Mar 2017<br></span></p>
+            <p><span class="fill"><strong>Mortgage Broker</strong> | Fortune Financial Services | Oct 2012 - Nov 2015<br></span></p>
             </div>
           </div>
         </div>
@@ -1049,10 +1105,10 @@
         <div class="d-flex flex-col">
           <div class="mx-auto">
             <div class="p-3 mt-3 text-center">
-              <img src= style="height:15rem" class="rounded">
+              <img src=my.png style="height:15rem" class="rounded">
             </div>
             <div class="p-2 text-center">
-              <h1>Mengyun(Jaffie) Yang</h1>
+              <h1><span class="fill">Mengyun(Jaffie) Yang</span></h1>
             </div>
             <hr style="width:60%;"/>
 
@@ -1078,24 +1134,52 @@
               </div>
             </div>
             <div class="p pt-4 px-5">
+              <style type="text/css">
+              body {
+                background-color: #325c59;
+              }
+
+              .distill-site-header {
+                --title-size:       25px;
+                --text-color:       #fffbf0;
+                --text-size:        20px;
+                --hover-color:      white;
+                --bkgd-color:      #325c59;
+              }
+
+              .fill {
+                color: #fffbf0;
+                font-family: 'Roboto', sans-serif;   
+              }
+
+              h2{
+                color:#fffbf0;
+                font-family: "Amiri", serif;
+              }
+
+              .distill-site-header .title {
+                font-size: 40px;
+                font-family: 'Open Sans', sans-serif;
+              }
+              </style>
               <div id="bio" class="section level2">
               <h2>Bio</h2>
-              <p>Hello, I am Jaffie, a performance-driven and self-motivated business analytics postgraduate student with over 5 years’ experience in marketing and 3 years in banking &amp; finance. Currently working towards a master degree in Business Analytics at Monash University. Enjoying overcoming challenges and aiming to apply my data analytic thinking and decision-making skills to solve real-life situations.</p>
+              <p><span class="fill">Hello, I am Jaffie, a performance-driven and self-motivated business analytics postgraduate student with over 5 years’ experience in marketing and 3 years in banking &amp; finance. Currently working towards a master degree in Business Analytics at Monash University. Enjoying overcoming challenges and aiming to apply my data analytic thinking and decision-making skills to solve real-life situations.</span></p>
               <p><br><br></p>
               </div>
               <div id="education" class="section level2">
               <h2>Education</h2>
-              <p><strong>Monash University</strong> | Melbourne, AU Master of Business Analytics | Mar 2021 - Present</p>
-              <p><strong>Monash University</strong> | Melbourne, AU Bachelor of Business (Banking &amp; Finance) | Mar 2007 - Nov 2010</p>
+              <p><span class="fill"><strong>Monash University</strong> | Melbourne, AU Master of Business Analytics | Mar 2021 - Present</span></p>
+              <p><span class="fill"><strong>Monash University</strong> | Melbourne, AU Bachelor of Business (Banking &amp; Finance) | Mar 2007 - Nov 2010</span></p>
               <p><br><br></p>
               </div>
               <div id="experience" class="section level2">
               <h2>Experience</h2>
-              <p><strong>Marketing and Operations Coordinator</strong> | CBRE | Jan 2019 - Apr 2021<br></p>
-              <p><strong>Sales and Leasing Administrator</strong> | Collins Commercial | Mar 2018 - Dec 2018<br></p>
-              <p><strong>Property Management Administrative Assistant</strong> | Fletcher’s Real Estate | Mar 2017 - Mar 2018<br></p>
-              <p><strong>Personal Assistant</strong> | Almas Real Estate | Nov 2015 - Mar 2017<br></p>
-              <p><strong>Mortgage Broker</strong> | Fortune Financial Services | Oct 2012 - Nov 2015<br></p>
+              <p><span class="fill"><strong>Marketing and Operations Coordinator</strong> | CBRE | Jan 2019 - Apr 2021<br></span></p>
+              <p><span class="fill"><strong>Sales and Leasing Administrator</strong> | Collins Commercial | Mar 2018 - Dec 2018<br></span></p>
+              <p><span class="fill"><strong>Property Management Administrative Assistant</strong> | Fletcher’s Real Estate | Mar 2017 - Mar 2018<br></span></p>
+              <p><span class="fill"><strong>Personal Assistant</strong> | Almas Real Estate | Nov 2015 - Mar 2017<br></span></p>
+              <p><span class="fill"><strong>Mortgage Broker</strong> | Fortune Financial Services | Oct 2012 - Nov 2015<br></span></p>
               </div>
             </div>
         </div>
