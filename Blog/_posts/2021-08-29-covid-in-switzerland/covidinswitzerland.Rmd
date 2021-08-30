@@ -11,9 +11,16 @@ output:
     self_contained: false
 ---
 
+```{css, echo = FALSE}
+h2{
+  color: #325c59;
+}
+```
+
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE)
 ```
 
 ```{r packages, message = FALSE}
@@ -21,16 +28,30 @@ library(here)
 library(ggplot2)
 library(dplyr)
 library(tidyverse)
+library(lubridate)
+library(kableExtra)
+library(formattable)
+library(DT)
+library(gt)
 library(sf)
 library(rworldmap)
+library(plotly)
 library(leaflet)
+library(rjson)
+library(geojsonio)
 ```
 
 ```{r read-data}
-covid <- read_csv(here::here("data/COVID19IntCases.csv"))
+covid <- read_csv(here("data/COVID19IntCases.csv"))
+#poly <- geojson_read(here("data/countries.geojson", what = "sp"))
 ```
+## Data Description
 
-```{r}
+## Data Story
+
+```{r map-data}
+
+# EU contries
 eu <- covid %>% 
   filter(geoRegionName %in% c("Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria",
                           "Croatia", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece",
@@ -40,15 +61,14 @@ eu <- covid %>%
                           "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom")) %>% 
   group_by(geoRegionName) %>% 
   summarise(count = sum(entries)) 
-```
 
-```{r, eval=FALSE}
+# get world map
 worldMap <- getMap()
 
-# Select only the index of states member of the E.U.
-indEU <- which(worldMap$NAME%in%eu$geoRegionName)
+# Select only the index of selected EU countries
+indEU <- which(worldMap$NAME %in% eu$geoRegionName)
 
-# Extract longitude and latitude border's coordinates of members states of E.U. 
+# Extract longitude and latitude border's coordinates  
 europeCoords <- lapply(indEU, function(i){
   df <- data.frame(worldMap@polygons[[i]]@Polygons[[1]]@coords)
   df$region =as.character(worldMap$NAME[i])
@@ -59,21 +79,47 @@ europeCoords <- lapply(indEU, function(i){
 europeCoords <- do.call("rbind", europeCoords)
 
 #join data
-#eu_map <- eu_df %>% 
-  #rename(region = "countriesAndTerritories") %>% 
-  #right_join(europeCoords,
-             #by = "region")
-
+eu_map <- eu %>% 
+  rename(region = "geoRegionName") %>% 
+  right_join(europeCoords,
+             by = "region")
 ```
 
-```{r, eval = FALSE}
-qpal = colorBin("Reds", eu_map$cases, bins=4)
+```{r map}
+map <- ggplot() + 
+  geom_polygon(data = eu_map, 
+               aes(x = long, 
+                   y = lat, 
+                   group = region, 
+                   fill = count),
+               colour = "black", size = 0.1) +
+  coord_map(xlim = c(-20, 180),  
+            ylim = c(10, 80))+ 
+  scale_fill_gradient(name = "Total Covid Cases", 
+                      low = "#d3e3fc", 
+                      high = "#314455", 
+                      na.value = "grey50") +
+  theme(#panel.grid.minor = element_line(colour = NA), panel.grid.minor = element_line(colour = NA),
+               panel.background = element_rect(fill = "white"),
+               axis.text.x = element_blank(),
+               axis.text.y = element_blank(), 
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(), 
+               axis.title = element_blank())
+               #rect = element_blank(),
+               #plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines"))
 
-europeCoords %>% 
-  leaflet() %>%
-  addTiles() %>% 
-  addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
-              color="black",fillColor = ~qpal(cases),weight = 1) 
+ ggplotly(map)
+```
 
+```{r tab-1}
+covid %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(geoRegionName == "Switzerland") %>% 
+  group_by(Year) %>% 
+  summarise("Total Confirmed Cases" = sum(entries)) %>% 
+  kable() %>% 
+  kable_styling()
 ```
 

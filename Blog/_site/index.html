@@ -2122,6 +2122,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&family=Roboto:wght@500&display=swap');
 
 
   html {
@@ -2141,7 +2142,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     --heading-font:    'Questrial', sans-serif;
     --mono-font:       "DM Mono", monospace;
     --body-font:       "DM Mono", monospace;
-    --navbar-font:     'Questrial', sans-serif; /* websites + blogs only */
+    --navbar-font:     'Roboto', sans-serif; /* websites + blogs only */
   }
 
   /*-- ARTICLE METADATA --*/
@@ -2172,9 +2173,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   .distill-site-header {
     --title-size:       25px;
     --text-color:       #325c59;
-    --text-size:        15px;
+    --text-size:        20px;
     --hover-color:      white;
-    --bkgd-color:       #fcecde;
+    --bkgd-color:       #f9f8f6;
   }
 
   .distill-site-footer {
@@ -2354,7 +2355,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_site_in_header-->
   <style type="text/css">
   body {
-    background-color: #f9f8f6;
+    background-color: #fffbf0;
+  }
+
+  h1{
+    color:#325c59;
+    
   }
   </style>
   <!--/radix_placeholder_site_in_header-->
@@ -2532,9 +2538,7 @@ function init_posts_list() {
 <div class="dt-author">Mengyun Yang</div>
 </div>
 </div>
-<div class="thumbnail">
-<img/>
-</div>
+<div class="thumbnail"></div>
 <div class="description">
 <h2>Covid in Switzerland</h2>
 <div class="dt-tags"></div>
