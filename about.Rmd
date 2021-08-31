@@ -34,12 +34,12 @@ body {
 
 h1{
   color: #fffbf0;
-  font-family: 'Arvo', serif;
+  font-family: 'Abril Fatface', cursive;
 }
 
 h2{
   color: #fffbf0;
-  font-family: 'Arvo', serif;
+  font-family: 'Abril Fatface', cursive;
 }
 
 .distill-site-header .title {

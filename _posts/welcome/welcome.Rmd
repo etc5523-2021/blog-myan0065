@@ -1,5 +1,5 @@
 ---
-title: "Welcome to My Blog"
+title: "Welcome to My Blog️️"
 description: |
   Welcome to my new blog. I hope you enjoy 
   reading what I have to say!
@@ -22,6 +22,5 @@ knitr::opts_chunk$set(echo = FALSE)
 # https://rstudio.github.io/distill/blog.html
 
 ```
-
 
 
