@@ -1,0 +1,295 @@
+---
+title: "Covid in Switzerland 🇨🇭"
+description: |
+  Total Number of Confirmed COVID-19 Cases, Deaths, Tests, Hospitalisations and Vaccines Administered in Switzerland.
+preview: thumbnail_1.png
+author:
+  - name: Jaffie Yang
+    url: https://example.com/norajones
+date: 08-29-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      out.width = "80%",
+                      fig.align = "center")
+```
+
+```{r packages, message = FALSE}
+library(here)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(naniar)
+library(kableExtra)
+library(formattable)
+library(DT)
+library(gt)
+library(sf)
+library(rworldmap)
+library(plotly)
+library(leaflet)
+library(rjson)
+library(geojsonio)
+library(tidycovid19)
+library(zoo)
+```
+
+```{r read-data}
+cases <- read_csv(here("data/COVID19IntCases.csv"))
+death <- read_csv(here("data/COVID19death.csv"))
+vacc <- read_csv(here("data/COVID19vaccine.csv"))
+hosp <- read_csv(here("data/COVID19hosp.csv"))
+test <- read_csv(here("data/COVID19test.csv"))
+#poly <- geojson_read(here("data/countries.geojson", what = "sp"))
+
+```
+
+
+```{r join-data}
+sc <- cases %>% 
+  filter(geoRegionName == "Switzerland") %>% 
+  select(geoRegion:entries) %>% 
+  rename(daily_confirmed = "entries")
+
+sd <- death %>% 
+  filter(geoRegion == "CH") %>% 
+  select(datum:entries) %>% 
+  rename(daily_total_deaths = "entries",
+         date = "datum")
+
+sh <- hosp %>% 
+  filter(geoRegion == "CH") %>% 
+  select(datum:entries, "pop") %>% 
+  rename(daily_hosp = "entries",
+         date = "datum") 
+
+st <- test %>% 
+  filter(geoRegion == "CH") %>% 
+  select(datum:"entries_neg") %>% 
+  rename(daily_test = "entries",
+         daily_pos_test = "entries_pos",
+         daily_neg_test = "entries_neg",
+         date = "datum")
+
+st <- st[32:581, ]
+
+
+s_vac <- vacc %>% 
+  filter(geoRegion == "CH") %>% 
+  select(date:entries) %>% 
+  rename(daily_vac_admin = "entries")
+
+s_cov <- sc %>% 
+  left_join(st,
+            by = "date") %>% 
+  left_join(sd,
+            by = "date") %>% 
+  left_join(sh,
+            by = "date") 
+```
+
+## Data Description 📄
+
+The five separate data sets used in the post were sourced from opendata.swiss, it is the Swiss public administration's central portal for open government data (opendata.swiss, 2021). Four of the five data sets were joined together to create a new data set call s_cov, it contains `r ncol(s_cov)` variables and `r nrow(s_cov)` observations. Data dictionary as follows:
+
+|**Variable**      |**Class** |**Description**                    |
+|:-----------------|:---------|:----------------------------------|
+|geoRegion         |character |Country geocode                    |
+|geoRegionName     |character |Country name                       |
+|date              |date      |Date                               |
+|daily_confirmed   |numeric   |Daily confirmed Covid-19 cases     | 
+|daily_test        |numeric   |Daily total test numbers           |
+|daily_pos_test    |numeric   |Daily total positive test          |
+|daily_neg_test    |numeric   |Daily total negative test          |
+|daily_total_deaths|numeric   |Daily total deaths                 | 
+|daily_hosp        |numeric   |Daily total hospitalisation numbers|
+
+
+
+
+<br><br>
+Number and percentage of missings in each variable are as follows:
+<br>
+```{r}
+miss_var_summary(s_cov) %>% 
+  datatable(options = list(pageLength = 4))
+```
+
+The other data set is call s_vac, it has `r ncol(s_vac)` variables and `r nrow(s_vac)` observations. Tables of Data dictionary and missing values in each variables are as follows:
+
+|**Variable**      |**Class** |**Description**                                  |
+|:-----------------|:---------|:------------------------------------------------|
+|date              |date      |Date                                             |
+|geoRegion         |character |Country geocode                                  |
+|vaccines          |date      |Type of vaccines administered: Moderna or Pfizer |
+|daily_confirmed   |numeric   |Daily confirmed Covid-19 cases                   |   
+
+```{r}
+miss_var_summary(s_vac) %>% 
+  datatable()
+```
+
+
+## Data Story 📖
+
+### Total Confirmed COVID-19 Cases in Europe
+
+```{r map-data} 
+# EU contries
+eu <- cases %>% 
+  filter(geoRegionName %in% c("Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria",
+                          "Croatia", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece",
+                          "Holy See", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Liechtenstein", "Lithuania",
+                          "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia",
+                          "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Serbia", "Slovakia",
+                          "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom")) %>% 
+  group_by(geoRegionName) %>% 
+  summarise(count = sum(entries)) 
+
+# get world map
+worldMap <- getMap()
+
+# Select only the index of selected EU countries
+indEU <- which(worldMap$NAME %in% eu$geoRegionName)
+
+# Extract longitude and latitude border's coordinates  
+europeCoords <- lapply(indEU, function(i){
+  df <- data.frame(worldMap@polygons[[i]]@Polygons[[1]]@coords)
+  df$region =as.character(worldMap$NAME[i])
+  colnames(df) <- list("long", "lat", "region")
+  return(df)
+})
+
+europeCoords <- do.call("rbind", europeCoords)
+
+#join data
+eu_map <- eu %>% 
+  rename(region = "geoRegionName") %>% 
+  right_join(europeCoords,
+             by = "region")
+```
+
+
+As Figure \@ref(fig:map) shown below, Russian, Franch and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst countries that have less confirmed cases.
+
+<style>
+.html-widget {
+    margin: auto;
+}
+</style>
+
+```{r map, fig.cap = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021"}
+map <- ggplot() + 
+  geom_polygon(data = eu_map, 
+               aes(x = long, 
+                   y = lat, 
+                   group = region, 
+                   fill = count),
+               colour = "black", size = 0.1) +
+  coord_map(xlim = c(-15, 40),  
+            ylim = c(30, 80))+ 
+  scale_fill_gradient(n.breaks = 6,
+                      name = "Total Confirmed Cases", 
+                      low = "#bffae6", 
+                      high = "#185a9d", 
+                      na.value = "grey50") +
+  theme(#panel.grid.minor = element_line(colour = NA), panel.grid.minor = element_line(colour = NA),
+               panel.background = element_rect(fill = "#fffbf0"),
+               plot.background= element_rect(fill = "#fffbf0", colour = "#fffbf0"),
+               legend.background = element_rect(fill = "#fffbf0", colour = "#fffbf0"),
+               axis.text.x = element_blank(),
+               axis.text.y = element_blank(), 
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(), 
+               axis.title = element_blank()) +
+               #rect = element_blank(),
+               #plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines"))
+  labs(title = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021")
+
+ ggplotly(map)
+```
+
+```{r covid}
+# 2020
+s_cov %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(geoRegionName == "Switzerland",
+         Year == "2020") %>% 
+  group_by(Month, Year) %>% 
+  summarise(across(c("daily_confirmed":"daily_hosp"), ~ sum(.x, na.rm = TRUE))) %>% 
+  datatable()
+
+
+
+
+
+#%>% 
+  #as.data.frame() %>% 
+  #formattable(list(area(col = 3:8) ~ color_tile("white", "#D45969")))
+```
+
+
+
+```{r eval = FALSE}
+
+# 2020
+s_cov_long <- s_cov %>% 
+  pivot_longer(cols = daily_confirmed:daily_hosp,
+               names_to = "type",
+               values_to = "count") %>% 
+  mutate(year = as.factor(year(date)),
+         month = month(date)) 
+
+s_cov_long %>% 
+  filter(type %in% c("daily_confirmed",
+                     "daily_test",
+                     "daily_total_deaths",
+                     "daily_hosp")) %>% 
+  group_by(month, type, year) %>% 
+  summarise(total_count = sum(count))
+
+  
+```
+
+
+```{r vacc}
+# 2020
+s_vac %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(Year == "2020") %>% 
+  group_by(Month, Year, vaccine) %>% 
+  summarise("Count of Vaccine Doses Administered" = sum(daily_vac_admin))
+
+# 2021
+s_vac %>% 
+  pivot_wider(names_from = vaccine,
+              values_from = daily_vac_admin) %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(Year == "2021") %>% 
+  group_by(Month, Year) %>% 
+  summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE))) %>% 
+    as.data.frame() %>% 
+  formattable(list(area(col = 3:4) ~ color_tile("white", "#D45969")))
+  
+```
+
+
+
+
+
+
+
+
+## References
+
+opendata.swiss. (2021, August 27). "COVID-19 Switzerland", <https://opendata.swiss/en/dataset/covid-19-schweiz?
