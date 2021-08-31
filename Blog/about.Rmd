@@ -1,5 +1,5 @@
 ---
-title: "[Mengyun(Jaffie) Yang]{.fill}"
+title: "Mengyun(Jaffie) Yang"
 image: "my.png"
 description: |
   Some additional details about the blog
@@ -32,8 +32,13 @@ body {
   font-family: 'Roboto', sans-serif;   
 }
 
+h1{
+  color: #fffbf0;
+  font-family: "Amiri", serif;
+}
+
 h2{
-  color:#fffbf0;
+  color: #fffbf0;
   font-family: "Amiri", serif;
 }
 
@@ -41,6 +46,26 @@ h2{
   font-size: 40px;
   font-family: 'Open Sans', sans-serif;
 }
+
+.btn-outline-dark {
+    color: #fffbf0;
+    border-color: #fffbf0;
+}
+
+.btn-outline-dark:hover {
+    color: #325c59;
+    background-color: #fffbf0;
+    border-color: #fffbf0;
+}
+
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 1px solid #fffbf0;;
+}
+
+
 ```
 
 ## Bio

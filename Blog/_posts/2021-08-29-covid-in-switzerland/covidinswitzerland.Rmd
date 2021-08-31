@@ -192,7 +192,7 @@ As Figure \@ref(fig:map) shown below, Russian, Franch and the United Kingdom hav
 }
 </style>
 
-```{r map, fig.cap = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021"}
+```{r map, fig.cap = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021", preview = TRUE}
 map <- ggplot() + 
   geom_polygon(data = eu_map, 
                aes(x = long, 
@@ -222,7 +222,31 @@ map <- ggplot() +
  ggplotly(map)
 ```
 
-```{r}
+```{r covid}
+# 2020
+s_cov %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(geoRegionName == "Switzerland",
+         Year == "2020") %>% 
+  group_by(Month, Year) %>% 
+  summarise(across(c("daily_confirmed":"daily_hosp"), ~ sum(.x, na.rm = TRUE))) %>% 
+  datatable()
+
+
+
+
+
+#%>% 
+  #as.data.frame() %>% 
+  #formattable(list(area(col = 3:8) ~ color_tile("white", "#D45969")))
+```
+
+
+
+```{r eval = FALSE}
+
+# 2020
 s_cov_long <- s_cov %>% 
   pivot_longer(cols = daily_confirmed:daily_hosp,
                names_to = "type",
@@ -242,23 +266,35 @@ s_cov_long %>%
 ```
 
 
-
-
-
-
-
-
-
-```{r tab-1, eval = FALSE}
-s_cov %>% 
+```{r vacc}
+# 2020
+s_vac %>% 
   mutate(Year = year(date),
          Month = month(date)) %>% 
-  filter(geoRegionName == "Switzerland") %>% 
-  group_by(Year) %>% 
-  summarise("Total Confirmed Cases" = sum(entries)) %>% 
-  kable() %>% 
-  kable_styling()
+  filter(Year == "2020") %>% 
+  group_by(Month, Year, vaccine) %>% 
+  summarise("Count of Vaccine Doses Administered" = sum(daily_vac_admin))
+
+# 2021
+s_vac %>% 
+  pivot_wider(names_from = vaccine,
+              values_from = daily_vac_admin) %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(Year == "2021") %>% 
+  group_by(Month, Year) %>% 
+  summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE))) %>% 
+    as.data.frame() %>% 
+  formattable(list(area(col = 3:4) ~ color_tile("white", "#D45969")))
+  
 ```
+
+
+
+
+
+
+
 
 ## References
 
