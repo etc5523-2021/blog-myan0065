@@ -34,11 +34,8 @@ library(gt)
 library(sf)
 library(rworldmap)
 library(plotly)
-library(leaflet)
-library(rjson)
-library(geojsonio)
-library(tidycovid19)
-library(zoo)
+library(doBy)
+library(moments)
 ```
 
 ```{r read-data}
@@ -299,6 +296,54 @@ s_cov_long %>%
 ```
 
 
+
+```{r sumstat}
+s_vac_wide <- s_vac %>% 
+  pivot_wider(names_from = vaccine,
+              values_from = total_vac_admin) %>% 
+    mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(Year == "2021") %>% 
+  rename(pfizer = "pfizer_biontech")
+
+
+fun <- function(x) { 
+  c(min = min(x), max = max(x), mean = mean(x), sd = sd(x, na.rm = TRUE), skewness = skewness(x, na.rm = TRUE)) 
+  } 
+
+sum <- summaryBy(moderna + pfizer ~ Year + geoRegin, data = s_vac_wide,
+          FUN = fun) %>% 
+  pivot_longer(cols = !Year,
+               names_to = c(".value",
+                            "Summary Statistics"),
+               names_sep = "\\.")
+  
+sum$moderna <- round(sum$moderna, 2)
+  
+sum$pfizer <- round(sum$pfizer, 2)
+
+sum %>% 
+  rename(Moderna = "moderna",
+         Pfizer = "pfizer") %>% 
+  kable(align='clcc') %>% 
+  kable_styling(bootstrap_options = c("striped", "hover")) %>% 
+  column_spec(2, width = "10em") %>% 
+  column_spec(3, background = "#ffe9e9") %>% 
+  column_spec(4, background = "#fffada")
+  
+
+  
+  
+
+
+```
+
+<style>
+.html-widget {
+    margin: auto;
+}
+</style>
+
 ```{r vacc}
 # 2020
 s_vac_1 <- s_vac %>% 
@@ -322,15 +367,21 @@ s_vac_2 <- s_vac %>%
   summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE))) 
 
 # join data for 2020 and 2021
-s_vac_joined <- rbind(s_vac_1, s_vac_2)
+s_vac_joined <- rbind(s_vac_1, s_vac_2) %>% 
+  rename(Moderna = "moderna",
+         Pfizer = "pfizer_biontech")
 
 s_vac_joined[, c(2,1, 3, 4)]%>% 
   as.data.frame() %>% 
-  formattable(list(area(col = 3:4) ~ color_tile("white", "#D45969")))
+  formattable(list(area(col = 3:4) ~ color_tile("white", "#98c89f")))
   
 ```
 
 
+```{r}
+data(dietox)
+dietox12    <- subset(dietox,Time==12)
+```
 
 
 
