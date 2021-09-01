@@ -1,0 +1,47 @@
+body {
+  background-color: #fffbf0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid #ddd;
+}
+
+
+
+
+.distill-site-header .title {
+  font-size: 40px;
+  font-family: 'Bungee Shade', cursive;
+  font-style: italic;
+  font-weight: 800;
+}
+
+.posts-list .posts-list-caption {
+    color: #325c59;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+}
+
+.fa-github-alt:before {
+    content: "\f113";
+}
+
+ul > li::marker {
+  font-size: 1.125em;
+  color: #325c59;
+}
+
+/* Change link appearance */
+d-article a {
+  border-bottom: 1px solid #e98074;
+  text-decoration: none;
+}
+
+
+.table{
+  margin-left: auto;
+  margin-right: auto;
+}
+

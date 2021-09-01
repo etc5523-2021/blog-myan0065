@@ -183,7 +183,7 @@ eu_map <- eu %>%
 ```
 
 
-As Figure \@ref(fig:map) shown below, Russian, French and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst countries that have less confirmed cases. However, population needs to be taken in to account when making comparisons with the total number of confirmed cases for each countries.
+As Figure \@ref(fig:map) (zoom in and hover over a country to see detailed infomation) shown below, Russian, French and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst countries that have less confirmed cases. However, population needs to be taken in to account when making comparisons with the total number of confirmed cases for each countries.
 
 <style>
 .html-widget {
@@ -222,7 +222,7 @@ map <- ggplot() +
 
 ### COVID-19 Figures in Switzerland (Feburary 2020 - August 2021) 📈
 
-Table \@ref(fig:covid) (produced by DT) presents the total count of confirmed cases, test numbers, deaths and hospitalisation by month for both 2020 and 2021 in Switzerland (use the filter to filter out numbers in each column and the drop down box for show to display the entire table). The coloured bars in each column show the distribution of the data, the bulk of the data for confirmed cases, deaths and hospitalisation lie between October 2020 to January 2021 where as testing numbers have been remaining high since October 2020, this indicates that the Swiss government has beening doing a good job encouraging people to get tested. There has been a spike in confirmed cases and hospitalisation since the end of June, this is largely due to the highly infectious Delta variant that affecting the unvaccinated people (SWI swissinfo.ch, 2021). However there is a positive sign that the number of deaths has been maintain low so far.
+Table \@ref(fig:covid) (produced by DT) presents the total count of confirmed cases, test numbers, deaths and hospitalisation by month for both 2020 and 2021 in Switzerland (use the filter to filter out numbers in each column and the drop down box on the top left corner to display the entire table). The coloured bars in each column show the distribution of the data, the bulk of the data for confirmed cases, deaths and hospitalisation lie between October 2020 to January 2021 where as testing numbers have been remaining high since October 2020, this indicates that the Swiss government has beening doing a good job encouraging people to get tested. There has been a spike in confirmed cases and hospitalisation since the end of June, this is largely due to the highly infectious Delta variant that affecting the unvaccinated people (SWI swissinfo.ch, 2021). However there is a positive sign that the number of deaths has been maintain low so far.
 
 ```{r covid, fig.cap = "COVID-19 Figures from Feb 2020 to August 2021", layout="l-body-outset"}
 # 2020
@@ -376,15 +376,6 @@ s_vac_joined %>%
               list(area(col = 3:4) ~ color_tile("white", "#7570b3")))
   
 ```
-
-
-
-
-
-
-
-
-
 
 
 ## References

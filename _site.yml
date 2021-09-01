@@ -3,7 +3,7 @@ title: "Y | MY"
 theme: theme.css
 description: |
   My Blog
-output_dir: "_site"
+output_dir: "docs"
 navbar:
   right:
     - text: "Home"
