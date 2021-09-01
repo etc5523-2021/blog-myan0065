@@ -4,6 +4,7 @@ theme: theme.css
 description: |
   My Blog
 output_dir: "docs"
+base_url: https://etc5523-2021.github.io/blog-myan0065/index.html
 navbar:
   right:
     - text: "Home"
@@ -12,6 +13,9 @@ navbar:
       href: about.html
     - icon: fab fa-github
       href: https://github.com/myan0065
+collections:
+  posts:
+    disqus: ymy-blog
 output: 
   distill::distill_article:
     css: styles.css
