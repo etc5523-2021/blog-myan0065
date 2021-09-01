@@ -1,8 +1,13 @@
 ---
 title: "Covid in Switzerland 🇨🇭"
 description: |
-  Total Number of Confirmed COVID-19 Cases, Deaths, Tests, Hospitalisations and Vaccines Administered in Switzerland.
+  Current Covid Status in Switzerland.
 preview: thumbnail_1.png
+categories:
+  - DT
+  - formattable
+  - kableExtra
+  - plotly
 author:
   - name: Jaffie Yang
     url: https://example.com/norajones
@@ -11,6 +16,11 @@ output:
   distill::distill_article:
     self_contained: false
 ---
+
+```{css, echo = FALSE}
+
+```
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
@@ -30,8 +40,6 @@ library(naniar)
 library(kableExtra)
 library(formattable)
 library(DT)
-library(gt)
-library(sf)
 library(rworldmap)
 library(plotly)
 library(doBy)
@@ -92,6 +100,8 @@ s_cov <- sc %>%
             by = "date") 
 ```
 
+I always wanted to visit Switzerland, the swiss alps, the chocolate and cheese, the diversity culture, you name it, and my dog is a Bernese Mountain Dog, one of the swiss breeds so it is always on my top bucket list to visit. I was actually planning to spend my summer holiday there in 2020 , however, covid makes it harder for me to complete my bucket list travel, therefore for this uni assignment, I choose Switzerland to be the country for a brief data analysis for COVID, it will give me insights into the current COVID situation in Switzerland so that I could re-plan my trip to there when the borders open.
+
 ## Data Description 📄
 
 The five separate data sets used in the post were sourced from opendata.swiss, it is the Swiss public administration's central portal for open government data (opendata.swiss, 2021). Four of the five data sets were joined together to create a new data set call s_cov, it contains `r ncol(s_cov)` variables and `r nrow(s_cov)` observations. Data dictionary and number and percentage of missings in each variable are as follows:
@@ -132,11 +142,12 @@ miss_var_summary(s_vac) %>%
 
 <br><br>
 
-## Data Story 📖
 
-### Total Confirmed COVID-19 Cases in Europe
+## Data Exploration 🔍
 
-```{r map-data} 
+### Total COVID-19 Confirmed Cases in Europe 📊
+
+```{r map-data-prep} 
 # EU contries
 eu <- cases %>% 
   filter(geoRegionName %in% c("Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria",
@@ -172,7 +183,7 @@ eu_map <- eu %>%
 ```
 
 
-As Figure \@ref(fig:map) shown below, Russian, Franch and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst countries that have less confirmed cases.
+As Figure \@ref(fig:map) shown below, Russian, French and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst countries that have less confirmed cases. However, population needs to be taken in to account when making comparisons with the total number of confirmed cases for each countries.
 
 <style>
 .html-widget {
@@ -180,7 +191,7 @@ As Figure \@ref(fig:map) shown below, Russian, Franch and the United Kingdom hav
 }
 </style>
 
-```{r map, fig.cap = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021"}
+```{r map, fig.cap = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021", out.width="100%"}
 map <- ggplot() + 
   geom_polygon(data = eu_map, 
                aes(x = long, 
@@ -188,30 +199,32 @@ map <- ggplot() +
                    group = region, 
                    fill = count),
                colour = "black", size = 0.1) +
-  coord_map(xlim = c(-15, 40),  
+  coord_map(xlim = c(-10, 30),  
             ylim = c(30, 80))+ 
   scale_fill_gradient(n.breaks = 6,
                       name = "Total Confirmed Cases", 
                       low = "#bffae6", 
                       high = "#185a9d", 
                       na.value = "grey50") +
-  theme(#panel.grid.minor = element_line(colour = NA), panel.grid.minor = element_line(colour = NA),
-               panel.background = element_rect(fill = "#fffbf0"),
-               plot.background= element_rect(fill = "#fffbf0", colour = "#fffbf0"),
-               legend.background = element_rect(fill = "#fffbf0", colour = "#fffbf0"),
-               axis.text.x = element_blank(),
-               axis.text.y = element_blank(), 
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(), 
-               axis.title = element_blank()) +
-               #rect = element_blank(),
-               #plot.margin = unit(0 * c(-1.5, -1.5, -1.5, -1.5), "lines"))
+  theme(panel.background = element_rect(fill = "#fffbf0"),
+        plot.background= element_rect(fill = "#fffbf0", colour = "#fffbf0"),
+        plot.title = element_text(hjust = 0.5),
+        legend.background = element_rect(fill = "#fffbf0", colour = "#fffbf0"),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.title = element_blank()) +
   labs(title = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021")
 
  ggplotly(map)
 ```
 
-```{r covid, fig.cap = "COVID-19 Figures from Feb 2020 to August 2021"}
+### COVID-19 Figures in Switzerland (Feburary 2020 - August 2021) 📈
+
+Table \@ref(fig:covid) (produced by DT) presents the total count of confirmed cases, test numbers, deaths and hospitalisation by month for both 2020 and 2021 in Switzerland (use the filter to filter out numbers in each column and the drop down box for show to display the entire table). The coloured bars in each column show the distribution of the data, the bulk of the data for confirmed cases, deaths and hospitalisation lie between October 2020 to January 2021 where as testing numbers have been remaining high since October 2020, this indicates that the Swiss government has beening doing a good job encouraging people to get tested. There has been a spike in confirmed cases and hospitalisation since the end of June, this is largely due to the highly infectious Delta variant that affecting the unvaccinated people (SWI swissinfo.ch, 2021). However there is a positive sign that the number of deaths has been maintain low so far.
+
+```{r covid, fig.cap = "COVID-19 Figures from Feb 2020 to August 2021", layout="l-body-outset"}
 # 2020
 s_cov_1 <- s_cov %>% 
   mutate(Year = year(date),
@@ -239,14 +252,14 @@ s_cov_joined <- rbind(s_cov_1, s_cov_2)
 s_cov_joined<- s_cov_joined[, c(2,1, 3, 4, 5, 6)]
 
 # DT table
-s_cov_joined%>% 
+s_cov_joined %>% 
   datatable(colnames = c("Year", "Month", "Confirmed Cases", "Test Numbers", 
                          "Total Deaths", "Hospitalisation Numbers"),
             options = list(pageLength = 10,
                            columnDefs = list(list(className = 'dt-center', targets = 0:5))),
             extensions = 'KeyTable', 
             class = "cell-border stripe",
-            caption = "COVID-19 Figures by Montah and Year",
+            caption = "COVID-19 Figures by Month and Year",
             filter = "top",
             rownames = FALSE) %>% 
   formatStyle("confirmed_cases",
@@ -260,7 +273,7 @@ s_cov_joined%>%
               backgroundRepeat = "no-repeat",
               backgroundPosition = "right") %>% 
   formatStyle("total_deaths",
-              background = styleColorBar(s_cov_joined$total_deaths, "#f0d9ff"),
+              background = styleColorBar(s_cov_joined$total_deaths, "#d0d8ea"),
               backgroundSize = "95% 50%",
               backgroundRepeat = "no-repeat",
               backgroundPosition = "right") %>% 
@@ -268,36 +281,48 @@ s_cov_joined%>%
               background = styleColorBar(s_cov_joined$hospitalisation, "#f6dfeb"),
               backgroundSize = "95% 50%",
               backgroundRepeat = "no-repeat",
-              backgroundPosition = "right")
+              backgroundPosition = "right") 
 
 ```
 
+### Vaccination Status in Switzerland 💉
 
-
-```{r eval = FALSE}
-
+```{r vac-data-prep}
 # 2020
-s_cov_long <- s_cov %>% 
-  pivot_longer(cols = daily_confirmed:daily_hosp,
-               names_to = "type",
-               values_to = "count") %>% 
-  mutate(year = as.factor(year(date)),
-         month = month(date)) 
+s_vac_1 <- s_vac %>% 
+  pivot_wider(names_from = vaccine,
+              values_from = total_vac_admin) %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(Year == "2020") %>% 
+  group_by(Month, Year) %>% 
+  summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE))) %>% 
+  ungroup()
 
-s_cov_long %>% 
-  filter(type %in% c("daily_confirmed",
-                     "daily_test",
-                     "daily_total_deaths",
-                     "daily_hosp")) %>% 
-  group_by(month, type, year) %>% 
-  summarise(total_count = sum(count))
 
-  
+# 2021
+s_vac_2 <- s_vac %>% 
+  pivot_wider(names_from = vaccine,
+              values_from = total_vac_admin) %>% 
+  mutate(Year = year(date),
+         Month = month(date)) %>% 
+  filter(Year == "2021") %>% 
+  group_by(Month, Year) %>% 
+  summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE))) %>% 
+  ungroup()
+
+# join data for 2020 and 2021
+s_vac_joined <- rbind(s_vac_1, s_vac_2) %>% 
+  rename(Moderna = "moderna",
+         Pfizer = "pfizer_biontech") 
+
+s_vac_joined <- s_vac_joined[, c(2,1, 3, 4)]
+
 ```
 
+The Moderna vaccine that being supplied to Europe is in fact manufactured in Switzerland by a Swiss firm called Lonza (House of Switzerland, 2021) and has become the most popular vaccine in Switzerland. This could be one of the factors that causes the average of doses administered for Moderna (26,555.32) was almost twice the amount of Pfizer (13,68.90) as well as the highest daily doses administered, 88,814 for Moderna and 37,954 for Pfizer, see Table \@ref(tab:sumstat). People may prefer vaccine that is manufactured in their home country rather than overseas. Another reason could be the approval for Moderna by the Swiss government in January this year after the approval for Pfizer in late 2020 and the Swiss drug regulator states that it showed 95% efficay in the trials (Miller, 2021), this may result in a spike in demand for the Moderna. Furthermore, Table \@ref(tab:sumstat) also shows that both vaccine data have a moderate positive skewness while the data for Moderna vaccine is more spread out.
 
-
-```{r sumstat}
+```{r sumstat, fig.cap = "Vaccines Administered in Switzerland"}
 s_vac_wide <- s_vac %>% 
   pivot_wider(names_from = vaccine,
               values_from = total_vac_admin) %>% 
@@ -323,69 +348,91 @@ sum$moderna <- round(sum$moderna, 2)
 sum$pfizer <- round(sum$pfizer, 2)
 
 sum %>% 
+  select("Summary Statistics",
+         "moderna",
+         "pfizer") %>% 
   rename(Moderna = "moderna",
          Pfizer = "pfizer") %>% 
-  kable(align='clcc') %>% 
+  kable(align='lcc',
+        caption = "<center><strong>Summary Statistics of Vaccins Administered in 2021</strong></center>") %>% 
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
-  column_spec(2, width = "10em") %>% 
-  column_spec(3, background = "#ffe9e9") %>% 
-  column_spec(4, background = "#fffada")
-  
-
-  
-  
+  column_spec(1, width = "10em") %>% 
+  column_spec(2, background = "#e4efe7") %>% 
+  column_spec(3, background = "#f6dfeb") 
 
 
+  
 ```
 
-<style>
-.html-widget {
-    margin: auto;
-}
-</style>
-
-```{r vacc}
-# 2020
-s_vac_1 <- s_vac %>% 
-  pivot_wider(names_from = vaccine,
-              values_from = total_vac_admin) %>% 
-  mutate(Year = year(date),
-         Month = month(date)) %>% 
-  filter(Year == "2020") %>% 
-  group_by(Month, Year) %>% 
-  summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE)))
+There were total of **`r format(sum(s_vac_joined$Moderna)+sum(s_vac_joined$Pfizer), scientific = FALSE)`** vaccines administered, beting **`r format(sum(s_vac_joined$Moderna), scientific = FALSE)`** and **`r format(sum(s_vac_joined$Pfizer), scientific = FALSE)`** Pfizer so far and that is roughly **`r round(((sum(s_vac_joined$Moderna)+sum(s_vac_joined$Pfizer))/(8606033*2))*100, 2)`%** of the population (8,606,033). Table 2 (produced by formattable) shows the total amount of vaccines administered in each month from December 2020 to August 2021, the deeper the colour the highest the number. There was a big increase in the number of Moderna doses since January and it had been increasing quite dramatically whereas the increases in Pfizer was not as significant as Moderna. However, the numbers for both vaccines continued to drop since June, the Swiss government had come up with solusion to boost the vaccination rate, as of October 1, the COVID test for all unvaccinated persons will no longer be free of charge (Schengenvisainfo, 2021), there could be an increase in the numbers in the future.
 
 
-# 2021
-s_vac_2 <- s_vac %>% 
-  pivot_wider(names_from = vaccine,
-              values_from = total_vac_admin) %>% 
-  mutate(Year = year(date),
-         Month = month(date)) %>% 
-  filter(Year == "2021") %>% 
-  group_by(Month, Year) %>% 
-  summarise(across(c("moderna", "pfizer_biontech"), ~ sum(.x, na.rm = TRUE))) 
+<center><small>Table 2: Vaccines Administered in Switzerland in 2021</small></center>
 
-# join data for 2020 and 2021
-s_vac_joined <- rbind(s_vac_1, s_vac_2) %>% 
-  rename(Moderna = "moderna",
-         Pfizer = "pfizer_biontech")
-
-s_vac_joined[, c(2,1, 3, 4)]%>% 
+```{r vacc, fig.cap = "Vaccines Administered in Switzerland", preview = TRUE}
+s_vac_joined %>% 
   as.data.frame() %>% 
-  formattable(list(area(col = 3:4) ~ color_tile("white", "#98c89f")))
+  formattable(align = c("c", "c", "c", "c"),
+              list(area(col = 3:4) ~ color_tile("white", "#7570b3")))
   
 ```
 
 
-```{r}
-data(dietox)
-dietox12    <- subset(dietox,Time==12)
-```
+
+
+
+
+
 
 
 
 
 ## References
 
-opendata.swiss. (2021, August 27). "COVID-19 Switzerland", <https://opendata.swiss/en/dataset/covid-19-schweiz?
+opendata.swiss. (2021, August 27). _"COVID-19 Switzerland"_, <https://opendata.swiss/en/dataset/covid-19-schweiz?
+
+SWI swissinfo.ch. (2021, August 18). _"New head of Swiss Covid-19 taskforce: ‘We’re in a very difficult situation'"_, <https://www.swissinfo.ch/eng/new-leader-of-swiss-covid-19-taskforce---we-are-in-a-very-difficult-situation-/46877048>
+
+House of Switzerland. (2021, April 14th). _"Moderna, the coronavirus vaccine made in Switzerland"_, <https://houseofswitzerland.org/swissstories/science-education/moderna-coronavirus-vaccine-made-switzerland>
+
+Miller. J. (2021, January 12). _"Swiss drugs regulator approves Moderna’s COVID-19 vaccine"_, Reuters, <https://www.reuters.com/article/us-health-coronavirus-swiss-vaccine-idUSKBN29H1JE>
+
+Schengenvisainfo. (2021, August 26). _"Swiss Government: COVID-19 Test Will No Longer Be Free of Charge for Unvaccinated Persons"_. <https://www.schengenvisainfo.com/news/swiss-government-covid-19-test-will-no-longer-be-free-of-charge-for-unvaccinated-persons/>
+
+R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria.
+URL https://www.R-project.org/.
+
+Kirill Müller (2020). here: A Simpler Way to Find Your Files. R package version 1.0.1. https://CRAN.R-project.org/package=here
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2021). dplyr: A Grammar of Data Manipulation. R package version 1.0.6.
+https://CRAN.R-project.org/package=dplyr
+
+Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686, https://doi.org/10.21105/joss.01686
+
+Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with lubridate. Journal of Statistical Software, 40(3), 1-25. URL
+https://www.jstatsoft.org/v40/i03/.
+
+Nicholas Tierney, Di Cook, Miles McBain and Colin Fay (2021). naniar: Data Structures, Summaries, and Visualisations for Missing Data. R
+package version 0.6.1. https://CRAN.R-project.org/package=naniar
+
+Hao Zhu (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version 1.3.4.
+https://CRAN.R-project.org/package=kableExtra
+
+Yihui Xie, Joe Cheng and Xianying Tan (2021). DT: A Wrapper of the JavaScript Library 'DataTables'. R package version 0.18.
+https://CRAN.R-project.org/package=DT
+
+Kun Ren and Kenton Russell (2021). formattable: Create 'Formattable' Data Structures. R package version 0.2.1.
+https://CRAN.R-project.org/package=formattable
+
+South, Andy 2011 rworldmap: A New R package for Mapping Global Data. The R Journal Vol. 3/1 : 35-43.
+
+C. Sievert. Interactive Web-Based Data Visualization with R, plotly, and shiny. Chapman and Hall/CRC Florida, 2020.
+
+Søren Højsgaard and Ulrich Halekoh (2021). doBy: Groupwise Statistics, LSmeans, Linear Contrasts, Utilities. R package version 4.6.11.
+https://CRAN.R-project.org/package=doBy
+
+Lukasz Komsta and Frederick Novomestky (2015). moments: Moments, cumulants, skewness, kurtosis and related tests. R package version
+0.14. https://CRAN.R-project.org/package=moments
+  

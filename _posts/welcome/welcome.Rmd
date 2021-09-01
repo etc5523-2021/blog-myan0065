@@ -1,7 +1,7 @@
 ---
 title: "Welcome to My Blog️️"
 description: |
-  Welcome to my new blog. I hope you enjoy 
+  I hope you enjoy 
   reading what I have to say!
 preview: "hello.jpeg"
 author:
@@ -23,4 +23,4 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-
+![](https://media.giphy.com/media/ZefIoePm93MwXpoYxz/giphy.gif?cid=790b7611a90b02e790aaa372e87ffd4155ade1c4a2ba8c78&rid=giphy.gif&ct=g)
