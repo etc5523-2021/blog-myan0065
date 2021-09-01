@@ -6,7 +6,6 @@ preview: thumbnail_1.png
 categories:
   - DT
   - formattable
-  - kableExtra
   - plotly
 author:
   - name: Jaffie Yang

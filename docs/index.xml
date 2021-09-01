@@ -15,7 +15,6 @@
       <description>Current Covid Status in Switzerland.</description>
       <category>DT</category>
       <category>formattable</category>
-      <category>kableExtra</category>
       <category>plotly</category>
       <guid>https://etc5523-2021.github.io/blog-myan0065/index.html/posts/2021-08-29-covid-in-switzerland</guid>
       <pubDate>Sun, 29 Aug 2021 00:00:00 +0000</pubDate>
