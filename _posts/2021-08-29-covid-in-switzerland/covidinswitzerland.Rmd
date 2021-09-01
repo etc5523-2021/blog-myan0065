@@ -99,7 +99,19 @@ s_cov <- sc %>%
             by = "date") 
 ```
 
-I always wanted to visit Switzerland, the swiss alps, the chocolate and cheese, the diversity culture, you name it, and my dog is a Bernese Mountain Dog, one of the swiss breeds so it is always on my top bucket list to visit. I was actually planning to spend my summer holiday there in 2020 , however, covid makes it harder for me to complete my bucket list travel, therefore for this uni assignment, I choose Switzerland to be the country for a brief data analysis for COVID, it will give me insights into the current COVID situation in Switzerland so that I could re-plan my trip to there when the borders open.
+I have always wanted to visit Switzerland, the swiss alps, the chocolate and cheese, the diverse culture, you name it, and I have a dog named Byron, he is a Bernese Mountain Dog, one of the swiss breeds. So it makes Switzerland always stays at the top of my bucket list. I was actually planning to spend my summer holiday there in 2020 , however, covid made it impossible for me to complete my bucket list. Therefore, I choose Switzerland to be the country for a brief data analysis for COVID for one of my uni assignments, I guess it will give me insights into the current COVID situation in Switzerland so that I could re-plan my trip to there when the borders open.
+
+![source: <a href="https://medium.com/the-ascent/transfiguration-hiking-the-swiss-alps-1eda6765c6f2"> @ASCENTPUB</a>](swiss.jpeg)
+
+<br>
+
+And this is my Swiss dog Byron. : )
+
+<div class="byron">
+<img src="byron.jpg" alt="Byron the Bernese Mountain Dog">
+</div>
+
+
 
 ## Data Description 📄
 

@@ -57,3 +57,17 @@ d-article a {
     border-radius: 6px;
     border: 1px #325c59 solid;
     width: 180px;
+}
+
+.byron {
+  width: 400px;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+    
+    
+  
