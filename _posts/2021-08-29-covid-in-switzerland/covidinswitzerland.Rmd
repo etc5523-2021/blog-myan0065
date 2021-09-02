@@ -380,7 +380,7 @@ sum %>%
   rename(Moderna = "moderna",
          Pfizer = "pfizer") %>% 
   kable(align='lcc',
-        caption = "<center><strong>Summary Statistics of Vaccins Administered in 2021</strong></center>") %>% 
+        caption = "<center><strong>Summary Statistics of Vaccines Administered in 2021</strong></center>") %>% 
   kable_styling(bootstrap_options = c("striped", "hover")) %>% 
   column_spec(1, width = "10em") %>% 
   column_spec(2, background = "#e4efe7") %>% 
