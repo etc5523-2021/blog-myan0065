@@ -4,7 +4,8 @@ theme: theme.css
 description: |
   My Blog
 output_dir: "docs"
-base_url: https://etc5523-2021.github.io/blog-myan0065/index.html
+base_url: https://etc5523-2021.github.io/blog-myan0065/
+repository_url: https://github.com/etc5523-2021/blog-myan0065
 navbar:
   right:
     - text: "Home"
@@ -15,8 +16,11 @@ navbar:
       href: https://github.com/myan0065
 collections:
   posts:
-    disqus: ymy-blog
+    disqus: 
+      shortname: ymy-distill
+      hidden: true
     share: [twitter, linkedin]
+    subscribe: _subscribe.html
 output: 
   distill::distill_article:
     css: styles.css

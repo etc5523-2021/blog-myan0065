@@ -628,12 +628,12 @@
             background-color: #fffbf0;
           }
 
+
           table {
             border-collapse: collapse;
             border-spacing: 0;
             border: 1px solid #ddd;
           }
-
 
 
 
@@ -647,7 +647,7 @@
           .posts-list .posts-list-caption {
               color: #325c59;
               font-family: 'Open Sans', sans-serif;
-              font-weight: 400;
+              font-weight: bold;
           }
 
           .fa-github-alt:before {
@@ -689,8 +689,25 @@
             width: 400px;
           }
 
-
+          .byron img {
+            display: block;
+            width: 100%;
+            height: auto;
+          }
               
+          .dataTable caption {
+              display: table-caption;
+              text-align: -webkit-center;
+              font-size: 16px;
+              font-weight: bold;
+          }    
+              
+          .distill-site-footer {
+              font-size: var(--text-size, 15px);
+              color: #fffbf0;
+              background-color: #325c59;
+          }
+            
             
           </style>
           <!--/radix_placeholder_site_in_header-->
@@ -816,7 +833,7 @@
             --aside-color:     rgba(0, 0, 0, 0.6);
             --fig-cap-color:   #325c59
             /*-- Specify custom fonts ~~~ must be imported above   --*/
-            --heading-font:    'Questrial', sans-serif;
+            --heading-font:    'Open Sans', sans-serif;
             --mono-font:       'Open Sans', sans-serif;
             --body-font:       'Open Sans', sans-serif;
             --navbar-font:     'Open Sans', sans-serif; /* websites + blogs only */
@@ -1137,7 +1154,7 @@
                 margin-top: 1rem;
                 margin-bottom: 1rem;
                 border: 0;
-                border-top: 1px solid #fffbf0;;
+                border-top: 1px solid #fffbf0;
             }
 
             </style>
@@ -1247,7 +1264,7 @@
                   margin-top: 1rem;
                   margin-bottom: 1rem;
                   border: 0;
-                  border-top: 1px solid #fffbf0;;
+                  border-top: 1px solid #fffbf0;
               }
 
               </style>
@@ -1284,7 +1301,11 @@
       <!--radix_placeholder_site_after_body-->
       <!--/radix_placeholder_site_after_body-->
       <!--radix_placeholder_navigation_after_body-->
+      <div class="distill-site-nav distill-site-footer">
+      <p>© Copyright <script>document.write(new Date().getFullYear())</script> Y|MY</p>
+      </div>
       <!--/radix_placeholder_navigation_after_body-->
+
   
   </body>
 </html>

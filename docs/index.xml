@@ -2,8 +2,8 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
   <channel>
     <title>Y | MY</title>
-    <link>https://etc5523-2021.github.io/blog-myan0065/index.html</link>
-    <atom:link href="https://etc5523-2021.github.io/blog-myan0065/index.html/index.xml" rel="self" type="application/rss+xml"/>
+    <link>https://etc5523-2021.github.io/blog-myan0065/</link>
+    <atom:link href="https://etc5523-2021.github.io/blog-myan0065/index.xml" rel="self" type="application/rss+xml"/>
     <description>My Blog
 </description>
     <generator>Distill</generator>
@@ -11,24 +11,24 @@
     <item>
       <title>Covid in Switzerland 🇨🇭</title>
       <dc:creator>Jaffie Yang</dc:creator>
-      <link>https://etc5523-2021.github.io/blog-myan0065/index.html/posts/2021-08-29-covid-in-switzerland</link>
+      <link>https://etc5523-2021.github.io/blog-myan0065/posts/2021-08-29-covid-in-switzerland</link>
       <description>Current Covid Status in Switzerland.</description>
       <category>DT</category>
       <category>formattable</category>
       <category>plotly</category>
-      <guid>https://etc5523-2021.github.io/blog-myan0065/index.html/posts/2021-08-29-covid-in-switzerland</guid>
+      <guid>https://etc5523-2021.github.io/blog-myan0065/posts/2021-08-29-covid-in-switzerland</guid>
       <pubDate>Sun, 29 Aug 2021 00:00:00 +0000</pubDate>
-      <media:content url="https://etc5523-2021.github.io/blog-myan0065/index.html/posts/2021-08-29-covid-in-switzerland/thumbnail_1.png" medium="image" type="image/png" width="864" height="780"/>
+      <media:content url="https://etc5523-2021.github.io/blog-myan0065/posts/2021-08-29-covid-in-switzerland/thumbnail_1.png" medium="image" type="image/png" width="864" height="780"/>
     </item>
     <item>
       <title>Welcome to My Blog️️</title>
       <dc:creator>Jaffie Yang</dc:creator>
-      <link>https://etc5523-2021.github.io/blog-myan0065/index.html/posts/welcome</link>
+      <link>https://etc5523-2021.github.io/blog-myan0065/posts/welcome</link>
       <description>I hope you enjoy 
 reading what I have to say!</description>
-      <guid>https://etc5523-2021.github.io/blog-myan0065/index.html/posts/welcome</guid>
+      <guid>https://etc5523-2021.github.io/blog-myan0065/posts/welcome</guid>
       <pubDate>Sun, 29 Aug 2021 00:00:00 +0000</pubDate>
-      <media:content url="https://etc5523-2021.github.io/blog-myan0065/index.html/posts/welcome/hello.jpeg" medium="image" type="image/jpeg"/>
+      <media:content url="https://media.giphy.com/media/ZefIoePm93MwXpoYxz/giphy.gif?cid=790b7611a90b02e790aaa372e87ffd4155ade1c4a2ba8c78&amp;rid=giphy.gif&amp;ct=g" medium="image" type="text/plain"/>
     </item>
   </channel>
 </rss>

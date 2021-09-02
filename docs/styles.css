@@ -2,12 +2,12 @@ body {
   background-color: #fffbf0;
 }
 
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
   border: 1px solid #ddd;
 }
-
 
 
 
@@ -21,7 +21,7 @@ table {
 .posts-list .posts-list-caption {
     color: #325c59;
     font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
+    font-weight: bold;
 }
 
 .fa-github-alt:before {
@@ -63,6 +63,23 @@ d-article a {
   width: 400px;
 }
 
-
+.byron img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
     
+.dataTable caption {
+    display: table-caption;
+    text-align: -webkit-center;
+    font-size: 16px;
+    font-weight: bold;
+}    
+    
+.distill-site-footer {
+    font-size: var(--text-size, 15px);
+    color: #fffbf0;
+    background-color: #325c59;
+}
+  
   

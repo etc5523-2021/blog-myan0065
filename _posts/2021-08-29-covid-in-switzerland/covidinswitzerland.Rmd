@@ -13,6 +13,8 @@ author:
 date: 08-29-2021
 output:
   distill::distill_article:
+    toc: true
+    toc_depth: 2
     self_contained: false
 ---
 
@@ -51,7 +53,6 @@ death <- read_csv(here("data/COVID19death.csv"))
 vacc <- read_csv(here("data/COVID19vaccine.csv"))
 hosp <- read_csv(here("data/COVID19hosp.csv"))
 test <- read_csv(here("data/COVID19test.csv"))
-#poly <- geojson_read(here("data/countries.geojson", what = "sp"))
 
 ```
 
@@ -99,11 +100,10 @@ s_cov <- sc %>%
             by = "date") 
 ```
 
-I have always wanted to visit Switzerland, the swiss alps, the chocolate and cheese, the diverse culture, you name it, and I have a dog named Byron, he is a Bernese Mountain Dog, one of the swiss breeds. So it makes Switzerland always stays at the top of my bucket list. I was actually planning to spend my summer holiday there in 2020 , however, covid made it impossible for me to complete my bucket list. Therefore, I choose Switzerland to be the country for a brief data analysis for COVID for one of my uni assignments, I guess it will give me insights into the current COVID situation in Switzerland so that I could re-plan my trip to there when the borders open.
+I have always wanted to visit Switzerland, the swiss alps, the chocolate and cheese, the diverse culture, you name it, it's always on my travel bucket list. I was actually planning to spend my summer holiday there in January 2020 , however, covid made it impossible for me to travel there. I wanted to choose Switzerland for this brief analysis (it is one of my uni assignments), I guess it will give me insights into the current COVID situation in Switzerland so that I could re-plan my trip to there when the borders open, plus I have a dog named Byron, he is a Bernese Mountain Dog, one of the swiss breeds!
 
-![source: <a href="https://medium.com/the-ascent/transfiguration-hiking-the-swiss-alps-1eda6765c6f2"> @ASCENTPUB</a>](swiss.jpeg)
+![source: <a href="https://medium.com/the-ascent/transfiguration-hiking-the-swiss-alps-1eda6765c6f2"> @ASCENTPUB</a>  How beautiful!](swiss.jpeg)
 
-<br>
 
 And this is my Swiss dog Byron. : )
 
@@ -111,11 +111,15 @@ And this is my Swiss dog Byron. : )
 <img src="byron.jpg" alt="Byron the Bernese Mountain Dog">
 </div>
 
+<br><br>
 
+So let us begin exploring the COVID data for Switzerland!
 
 ## Data Description 📄
 
-The five separate data sets used in the post were sourced from opendata.swiss, it is the Swiss public administration's central portal for open government data (opendata.swiss, 2021). Four of the five data sets were joined together to create a new data set call s_cov, it contains `r ncol(s_cov)` variables and `r nrow(s_cov)` observations. Data dictionary and number and percentage of missings in each variable are as follows:
+The five separate data sets used in the post were sourced from <a href=https://opendata.swiss/en/dataset/covid-19-schweiz?> opendata.swiss</a>, it is the Swiss public administration's central portal for open government data (opendata.swiss, 2021). Four of the five data sets were joined together to create a new data set called s_cov, it contains `r ncol(s_cov)` variables and `r nrow(s_cov)` observations which contain data only for Switzerland from 24/02/2020 to 26/08/2021. Data dictionary and number and percentage of missings in each variable are as follows:
+
+<center>Data Dictionary</center>
 
 |**Variable**      |**Class** |**Description**                    |
 |:-----------------|:---------|:----------------------------------|
@@ -129,15 +133,21 @@ The five separate data sets used in the post were sourced from opendata.swiss, i
 |daily_total_deaths|numeric   |Daily total deaths                 | 
 |daily_hosp        |numeric   |Daily total hospitalisation numbers|
 
+<br><br>
 
 ```{r}
 miss_var_summary(s_cov) %>% 
-  datatable(options = list(pageLength = 4))
+  datatable(options = list(pageLength = 4,
+                            columnDefs = list(list(className = 'dt-center', targets = 2:3))),
+            caption = "Missing Values in Each Variable",
+            colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
 ```
 
 <br><br>
 
-The other data set is call s_vac, it has `r ncol(s_vac)` variables and `r nrow(s_vac)` observations. Tables of Data dictionary and missing values in each variables are as follows:
+The other data set is all about the vaccination entries for each countries. By filtering this data set to just contain Switzerland, a new data set produced and it's called s_vac, it has `r ncol(s_vac)` variables and `r nrow(s_vac)` observations which have data from 22/12/2020 to 20/08/2021. Tables of Data dictionary and missing values in each variables are as follows:
+
+<center>Data Dictionary</center>
 
 |**Variable**      |**Class** |**Description**                                  |
 |:-----------------|:---------|:------------------------------------------------|
@@ -146,9 +156,14 @@ The other data set is call s_vac, it has `r ncol(s_vac)` variables and `r nrow(s
 |vaccines          |date      |Type of vaccines administered: Moderna or Pfizer |
 |daily_confirmed   |numeric   |Daily confirmed Covid-19 cases                   |   
 
+
+<br><br>
+
 ```{r}
 miss_var_summary(s_vac) %>% 
-  datatable()
+  datatable(options = list(columnDefs = list(list(className = 'dt-center', targets = 2:3))),
+            caption = "Missing Values in Each Variable",
+            colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
 ```
 
 <br><br>
@@ -194,7 +209,7 @@ eu_map <- eu %>%
 ```
 
 
-As Figure \@ref(fig:map) (zoom in and hover over a country to see detailed infomation) shown below, Russian, French and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst countries that have less confirmed cases. However, population needs to be taken in to account when making comparisons with the total number of confirmed cases for each countries.
+As Figure \@ref(fig:map) (zoom in and hover over a country to see detailed infomation) shown below, Russia, France and the United Kingdom have the most confirmed cases, followed by Italy, Germany and Spain. Switzerland are amongst the countries that have less confirmed cases, however, population needs to be taken into account when making comparisons with the total number of confirmed cases for each countries.
 
 <style>
 .html-widget {
@@ -233,7 +248,7 @@ map <- ggplot() +
 
 ### COVID-19 Figures in Switzerland (Feburary 2020 - August 2021) 📈
 
-Table \@ref(fig:covid) (produced by DT) presents the total count of confirmed cases, test numbers, deaths and hospitalisation by month for both 2020 and 2021 in Switzerland (use the filter to filter out numbers in each column and the drop down box on the top left corner to display the entire table). The coloured bars in each column show the distribution of the data, the bulk of the data for confirmed cases, deaths and hospitalisation lie between October 2020 to January 2021 where as testing numbers have been remaining high since October 2020, this indicates that the Swiss government has beening doing a good job encouraging people to get tested. There has been a spike in confirmed cases and hospitalisation since the end of June, this is largely due to the highly infectious Delta variant that affecting the unvaccinated people (SWI swissinfo.ch, 2021). However there is a positive sign that the number of deaths has been maintain low so far.
+Table \@ref(fig:covid) (produced by DT) presents the total number of confirmed cases, test numbers, deaths and hospitalisation by month for both 2020 and 2021 (use the filter to filter out numbers in each column and the drop down box on the top left corner to display the entire table). The coloured bar in each column shows the distribution of the data, the bulk of the data for confirmed cases, deaths and hospitalisation all lie between October 2020 to January 2021 whereas testing numbers had been remaining high since October 2020, this indicates that the Swiss government has been doing a good job on encouraging people to get tested. There has been a spike in the confirmed cases and hospitalisation numbers since the end of June, this is largely due to the highly infectious Delta variant that affecting the unvaccinated people (SWI swissinfo.ch, 2021). Although the data is showing an concerning trend, there is a positive sign that the number of deaths has been maintain low so far and hopefully the Swiss government could have the infectious rate under contol in the near future.
 
 ```{r covid, fig.cap = "COVID-19 Figures from Feb 2020 to August 2021", layout="l-body-outset"}
 # 2020
@@ -331,7 +346,7 @@ s_vac_joined <- s_vac_joined[, c(2,1, 3, 4)]
 
 ```
 
-The Moderna vaccine that being supplied to Europe is in fact manufactured in Switzerland by a Swiss firm called Lonza (House of Switzerland, 2021) and has become the most popular vaccine in Switzerland. This could be one of the factors that causes the average of doses administered for Moderna (26,555.32) was almost twice the amount of Pfizer (13,68.90) as well as the highest daily doses administered, 88,814 for Moderna and 37,954 for Pfizer, see Table \@ref(tab:sumstat). People may prefer vaccine that is manufactured in their home country rather than overseas. Another reason could be the approval for Moderna by the Swiss government in January this year after the approval for Pfizer in late 2020 and the Swiss drug regulator states that it showed 95% efficay in the trials (Miller, 2021), this may result in a spike in demand for the Moderna. Furthermore, Table \@ref(tab:sumstat) also shows that both vaccine data have a moderate positive skewness while the data for Moderna vaccine is more spread out.
+The Moderna vaccine that being supplied to Europe is in fact manufactured in Switzerland by a Swiss firm called Lonza (House of Switzerland, 2021) and it has become the most popular vaccine in Switzerland. This could be one of the factors that causes the average number of Moderna administered (26,555.32) was almost twice the amount of Pfizer (13,68.90), the highest daily number of Moderna dministered (88,814) was more than double the amount of Ofizer (37,954), see Table \@ref(tab:sumstat). It it suspected that people may prefer vaccine that is manufactured in their home country rather than overseas. Another reason could be the approval for Moderna by the Swiss government in January this year after the approval for Pfizer in late 2020 and the Swiss drug regulator states that it showed 95% efficay in the trials (Miller, 2021), this could also potentially be the reason why a surge in demand for the Moderna. Furthermore, Table \@ref(tab:sumstat) also demonstrates that both vaccine have a moderate positive skewness while the data for Moderna vaccine is more spread out.
 
 ```{r sumstat, fig.cap = "Vaccines Administered in Switzerland"}
 s_vac_wide <- s_vac %>% 
@@ -375,7 +390,7 @@ sum %>%
   
 ```
 
-There were total of **`r format(sum(s_vac_joined$Moderna)+sum(s_vac_joined$Pfizer), scientific = FALSE)`** vaccines administered, beting **`r format(sum(s_vac_joined$Moderna), scientific = FALSE)`** and **`r format(sum(s_vac_joined$Pfizer), scientific = FALSE)`** Pfizer so far and that is roughly **`r round(((sum(s_vac_joined$Moderna)+sum(s_vac_joined$Pfizer))/(8606033*2))*100, 2)`%** of the population (8,606,033). Table 2 (produced by formattable) shows the total amount of vaccines administered in each month from December 2020 to August 2021, the deeper the colour the highest the number. There was a big increase in the number of Moderna doses since January and it had been increasing quite dramatically whereas the increases in Pfizer was not as significant as Moderna. However, the numbers for both vaccines continued to drop since June, the Swiss government had come up with solusion to boost the vaccination rate, as of October 1, the COVID test for all unvaccinated persons will no longer be free of charge (Schengenvisainfo, 2021), there could be an increase in the numbers in the future.
+There were total of **`r format(sum(s_vac_joined$Moderna)+sum(s_vac_joined$Pfizer), scientific = FALSE)`** vaccines administered, being **`r format(sum(s_vac_joined$Moderna), scientific = FALSE)`** doese of Moderna and **`r format(sum(s_vac_joined$Pfizer), scientific = FALSE)`** doese of Pfizer so far and that is roughly **`r round(((sum(s_vac_joined$Moderna)+sum(s_vac_joined$Pfizer))/(8606033*2))*100, 2)`%** of the population (8,606,033) in Switzerland. Table 2 (produced by formattable) shows the total amount of vaccines administered in each month from December 2020 to August 2021, the deeper the colour the highest the number. There was a big increase in the number of Moderna doses since January and it had been increasing quite dramatically whereas the increases in Pfizer was not as significant as Moderna. However, the numbers for both vaccines continued to drop since June, the Swiss government had come up with solution to boost the vaccination rate, as of October 1, the COVID test for all unvaccinated persons will no longer be free of charge (Schengenvisainfo, 2021) and hopefully this policy will trigger an increase in the vaccination rate.
 
 
 <center><small>Table 2: Vaccines Administered in Switzerland in 2021</small></center>
@@ -388,18 +403,25 @@ s_vac_joined %>%
   
 ```
 
+The Swiss government has done a good job on controlling the spread of the virus by maintaining a low death rate, promotion on the vaccination campaign as well as tighten up the restrictions etc. A survey shows that almost 73% of people who took part in the survey said they thought Switzerland was doing better than other European countries in dealing with the pandemic (SWI swissinfo.ch, 2021). Let's hope this pandemic will end soon and there will be a light at the end of the tunnel! 
+
+
+
+<br><br>
 
 ## References
 
-opendata.swiss. (2021, August 27). _"COVID-19 Switzerland"_, <https://opendata.swiss/en/dataset/covid-19-schweiz?
+opendata.swiss. (2021, August 27). "COVID-19 Switzerland", <https://opendata.swiss/en/dataset/covid-19-schweiz>
 
-SWI swissinfo.ch. (2021, August 18). _"New head of Swiss Covid-19 taskforce: ‘We’re in a very difficult situation'"_, <https://www.swissinfo.ch/eng/new-leader-of-swiss-covid-19-taskforce---we-are-in-a-very-difficult-situation-/46877048>
+SWI swissinfo.ch. (2021, August 18). "New head of Swiss Covid-19 taskforce: ‘We’re in a very difficult situation'", <https://www.swissinfo.ch/eng/new-leader-of-swiss-covid-19-taskforce---we-are-in-a-very-difficult-situation-/46877048>
 
-House of Switzerland. (2021, April 14th). _"Moderna, the coronavirus vaccine made in Switzerland"_, <https://houseofswitzerland.org/swissstories/science-education/moderna-coronavirus-vaccine-made-switzerland>
+House of Switzerland. (2021, April 14th). "Moderna, the coronavirus vaccine made in Switzerland", <https://houseofswitzerland.org/swissstories/science-education/moderna-coronavirus-vaccine-made-switzerland>
 
-Miller. J. (2021, January 12). _"Swiss drugs regulator approves Moderna’s COVID-19 vaccine"_, Reuters, <https://www.reuters.com/article/us-health-coronavirus-swiss-vaccine-idUSKBN29H1JE>
+Miller. J. (2021, January 12). "Swiss drugs regulator approves Moderna’s COVID-19 vaccine", Reuters, <https://www.reuters.com/article/us-health-coronavirus-swiss-vaccine-idUSKBN29H1JE>
 
-Schengenvisainfo. (2021, August 26). _"Swiss Government: COVID-19 Test Will No Longer Be Free of Charge for Unvaccinated Persons"_. <https://www.schengenvisainfo.com/news/swiss-government-covid-19-test-will-no-longer-be-free-of-charge-for-unvaccinated-persons/>
+Schengenvisainfo. (2021, August 26). "Swiss Government: COVID-19 Test Will No Longer Be Free of Charge for Unvaccinated Persons". <https://www.schengenvisainfo.com/news/swiss-government-covid-19-test-will-no-longer-be-free-of-charge-for-unvaccinated-persons/>
+
+SWI swissinfo.ch. (2021, July 9). "Covid-19 poll: Swiss morale picks up", <https://www.swissinfo.ch/eng/covid-19-poll--swiss-morale-picks-up/46773098>
 
 R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria.
 URL https://www.R-project.org/.
@@ -437,4 +459,6 @@ https://CRAN.R-project.org/package=doBy
 
 Lukasz Komsta and Frederick Novomestky (2015). moments: Moments, cumulants, skewness, kurtosis and related tests. R package version
 0.14. https://CRAN.R-project.org/package=moments
+  
+  
   
