@@ -245,9 +245,10 @@ map <- ggplot() +
         axis.ticks.x = element_blank(),
         axis.ticks.y = element_blank(), 
         axis.title = element_blank()) +
-  labs(title = "Total Confirmed Covid-19 Cases in Europe by 26/08/2021")
+  labs(title = "Total Number Of Covid-19 Confirmed Cases \n in Europe by 26/08/2021")
 
- ggplotly(map)
+ ggplotly(map,
+          originalData = TRUE)
 ```
 
 ### COVID-19 Figures in Switzerland (Feburary 2020 - August 2021) 📈
