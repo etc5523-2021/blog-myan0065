@@ -11,16 +11,13 @@
 /* Optional: embed custom fonts here with `@import`          */
 /* This must remain at the top of this file.                 */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&family=Roboto:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Arvo&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
 
 html {
   /*-- Main font sizes --*/

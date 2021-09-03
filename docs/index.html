@@ -87,26 +87,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
 
   <!--radix_placeholder_meta_tags-->
-  <title>Y | MY: POSTS</title>
+  <title>Y | MY: Posts</title>
 
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Y | MY: POSTS"/>
+  <meta property="og:title" content="Y | MY: Posts"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Y | MY"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Y | MY: POSTS"/>
+  <meta property="twitter:title" content="Y | MY: Posts"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site","listing"]}},"value":[{"type":"character","attributes":{},"value":["POSTS"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["posts"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site","listing"]}},"value":[{"type":"character","attributes":{},"value":["Posts"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["posts"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2121,16 +2121,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   /* Optional: embed custom fonts here with `@import`          */
   /* This must remain at the top of this file.                 */
 
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&family=Roboto:wght@500&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Arvo&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
 
   html {
     /*-- Main font sizes --*/
@@ -2440,12 +2437,24 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }    
       
   .distill-site-footer {
-      font-size: var(--text-size, 15px);
+      font-size: var(--text-size, 8px);
       color: #fffbf0;
       background-color: #325c59;
+      padding-top: 10px;
+      padding-bottom: 10px;
   }
     
     
+  .l-body-outset {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  h1, h2, h3, h4, h5, h6, .posts-list .post-preview h2, .posts-list .description h2 {
+      font-family: 'Fira Mono', monospace;
+  }
   </style>
   <!--/radix_placeholder_site_in_header-->
 
@@ -2458,7 +2467,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"POSTS","authors":[]}
+{"title":"Posts","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2616,7 +2625,7 @@ function init_posts_list() {
 
 <div class="posts-container posts-with-sidebar posts-apply-limit l-screen-inset">
 <div class="posts-list">
-<h1 class="posts-list-caption" data-caption="POSTS">POSTS</h1>
+<h1 class="posts-list-caption" data-caption="Posts">Posts</h1>
 <a href="posts/2021-08-29-covid-in-switzerland/" class="post-preview">
 <script class="post-metadata" type="text/json">{"categories":["DT","formattable","plotly"]}</script>
 <div class="metadata">
@@ -2652,8 +2661,8 @@ function init_posts_list() {
 <div class="description">
 <h2>Welcome to My Blog️️</h2>
 <div class="dt-tags"></div>
-<p>I hope you enjoy 
-reading what I have to say!</p>
+<p>Thank you for stopping by! I hope you enjoy 
+reading what I have to say.</p>
 </div>
 </a>
 </div>
@@ -2699,7 +2708,7 @@ reading what I have to say!</p>
 <!--/radix_placeholder_article_listing-->
 
 <div class="d-title">
-<h1>POSTS</h1>
+<h1>Posts</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 

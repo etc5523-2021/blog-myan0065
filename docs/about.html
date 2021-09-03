@@ -703,12 +703,24 @@
           }    
               
           .distill-site-footer {
-              font-size: var(--text-size, 15px);
+              font-size: var(--text-size, 8px);
               color: #fffbf0;
               background-color: #325c59;
+              padding-top: 10px;
+              padding-bottom: 10px;
           }
             
             
+          .l-body-outset {
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+
+          h1, h2, h3, h4, h5, h6, .posts-list .post-preview h2, .posts-list .description h2 {
+              font-family: 'Fira Mono', monospace;
+          }
           </style>
           <!--/radix_placeholder_site_in_header-->
           
@@ -808,16 +820,13 @@
           /* Optional: embed custom fonts here with `@import`          */
           /* This must remain at the top of this file.                 */
 
-          @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=Questrial&family=Roboto:wght@500&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
           @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap');
           @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Arvo&display=swap');
           @import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap');
           @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Shrikhand&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
 
           html {
             /*-- Main font sizes --*/
@@ -1126,12 +1135,12 @@
 
             h1{
               color: #fffbf0;
-              font-family: 'Abril Fatface', cursive;
+              font-family: 'Fira Mono', monospace;
             }
 
             h2{
               color: #fffbf0;
-              font-family: 'Abril Fatface', cursive;
+              font-family: 'Fira Mono', monospace;
             }
 
             .distill-site-header .title {
@@ -1236,12 +1245,12 @@
 
               h1{
                 color: #fffbf0;
-                font-family: 'Abril Fatface', cursive;
+                font-family: 'Fira Mono', monospace;
               }
 
               h2{
                 color: #fffbf0;
-                font-family: 'Abril Fatface', cursive;
+                font-family: 'Fira Mono', monospace;
               }
 
               .distill-site-header .title {
