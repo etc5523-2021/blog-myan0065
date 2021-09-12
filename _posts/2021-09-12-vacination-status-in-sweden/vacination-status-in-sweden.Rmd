@@ -1,0 +1,79 @@
+---
+title: "Vacination Status in Sweden"
+description: |
+  A short description of the post.
+author:
+  - name: Jaffie Yang
+    url: https://etc5523-2021.github.io/blog-myan0065/about.html
+date: 09-12-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      out.width = "80%",
+                      fig.align = "center")
+```
+
+```{r package}
+library(here)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(naniar)
+library(kableExtra)
+library(rworldmap)
+library(plotly)
+library(DT)
+```
+
+```{r read-data}
+vacc <- read_csv(here("data/data_se.csv"))
+```
+
+
+## Data Description 📄
+
+```{r}
+tribble(
+  ~Variable, ~Class, ~Description,
+  #---|----|--------------
+  "YearWeekISO", "Character", "Date when the vaccine was administered. Only weeks are allowed (e.g. “2021-W01”).",
+  "FirstDose", "Numeric", "Number of first dose vaccine administered to individuals during the reporting week.",
+  "FirstDoseRefused", "Numeric", "Number of individuals refusing the first vaccine dose.",
+  "SeconDose", "Numeric", "Number of second dose vaccine administered to individuals during the reporting week.",
+  "Unknown Dose", "Numeric", "Number of doses administered during the reporting week where the type of dose (first or second) was not specified.",
+  "NumberDosesReceived", "Numeric", "Number of vaccine doses distributed by the manufacturers to the country during the reporting week.",
+  "Region", "Character", "Country code",
+  "Polulation", "Numeric", "Age-specific population for the country",
+  "Reporting Country", "Character", "Two-letter county code",
+  "Target Group","Character", "Target group for vaccination. “ALL” for the overall figures, “HCW” for healthcare workers and age-groups.",
+  "Vaccine", "Charater", "Name of vaccine. AZ = AstraZeneca, BECNBG (previously CN) = Beijing CNBG, BHACOV = Bharat, COM = Pfizer/BioNTech, JANSS = Janssen, HAYATVAC = Hayat VAC, MOD = Moderna, QAZVAQ = QazCovid-In, SIICOV = Covishield – SII, SIN = Sinovac, SPU = Sputnik V - Gamaleya, SRCVB = EpiVacCorona – SRCVB, WUCNBG = Inactivated – Wuhan CNBG, UNK = UNKNOWN, ZFUZ = Sino-Uzbek - ZF-UZVAC",
+  "Denominator", "Numeric", "Population denominators for target groups.") %>% 
+    datatable(options = list(pageLength = 6,
+                            columnDefs = list(list(className = 'dt-left', targets = 1:3))),
+            caption = "Data Dictionary")
+```
+
+<br><br>
+
+```{r}
+vacc %>% 
+  filter(ReportingCountry == "SE") %>% 
+miss_var_summary() %>% 
+    datatable(options = list(pageLength = 5,
+                            columnDefs = list(list(className = 'dt-center', targets = 2:3))),
+            caption = "Missing Values in Each Variable",
+            colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
+
+```
+
+## Data Exploration 🔍
+
+

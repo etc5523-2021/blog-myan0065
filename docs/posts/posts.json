@@ -1,5 +1,22 @@
 [
   {
+    "path": "posts/2021-09-12-vacination-status-in-sweden/",
+    "title": "Vacination Status in Sweden",
+    "description": "A short description of the post.",
+    "author": [
+      {
+        "name": "Jaffie Yang",
+        "url": "https://etc5523-2021.github.io/blog-myan0065/about.html"
+      }
+    ],
+    "date": "2021-09-12",
+    "categories": [],
+    "contents": "\n\n\n\n\n\n\n\n\n{\"x\":{\"filter\":\"none\",\"caption\":\"<caption>Missing Values in Each Variable<\\/caption>\",\"data\":[[\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\",\"11\",\"12\"],[\"YearWeekISO\",\"FirstDose\",\"FirstDoseRefused\",\"SeconDose\",\"Unknown Dose\",\"NumberDosesReceived\",\"Region\",\"Polulation\",\"Reporting Country\",\"Target Group\",\"Vaccine\",\"Denominator\"],[\"Character\",\"Numeric\",\"Numeric\",\"Numeric\",\"Numeric\",\"Numeric\",\"Character\",\"Numeric\",\"Character\",\"Character\",\"Charater\",\"Numeric\"],[\"Date when the vaccine was administered. Only weeks are allowed (e.g. “2021-W01”).\",\"Number of first dose vaccine administered to individuals during the reporting week.\",\"Number of individuals refusing the first vaccine dose.\",\"Number of second dose vaccine administered to individuals during the reporting week.\",\"Number of doses administered during the reporting week where the type of dose (first or second) was not specified.\",\"Number of vaccine doses distributed by the manufacturers to the country during the reporting week.\",\"Country code\",\"Age-specific population for the country\",\"Two-letter county code\",\"Target group for vaccination. “ALL” for the overall figures, “HCW” for healthcare workers and age-groups.\",\"Name of vaccine\",\"Population denominators for target groups.\"]],\"container\":\"<table class=\\\"display\\\">\\n  <thead>\\n    <tr>\\n      <th> <\\/th>\\n      <th>Variable<\\/th>\\n      <th>Class<\\/th>\\n      <th>Description<\\/th>\\n    <\\/tr>\\n  <\\/thead>\\n<\\/table>\",\"options\":{\"pageLength\":4,\"order\":[],\"autoWidth\":false,\"orderClasses\":false,\"columnDefs\":[{\"orderable\":false,\"targets\":0}],\"lengthMenu\":[4,10,25,50,100]}},\"evals\":[],\"jsHooks\":[]}\n\n\n\n",
+    "preview": {},
+    "last_modified": "2021-09-12T13:34:39+10:00",
+    "input_file": "vacination-status-in-sweden.knit.md"
+  },
+  {
     "path": "posts/2021-08-29-covid-in-switzerland/",
     "title": "Covid in Switzerland 🇨🇭",
     "description": "Current Covid Status in Switzerland.",
