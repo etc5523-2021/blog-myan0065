@@ -1,0 +1,152 @@
+---
+title: "A Survey of the Impact of COVID-19 and Current Vacination Status in Sweden"
+description: |
+  A short description of the post.
+categories:
+  - COVID-19
+author:
+  - name: Jaffie Yang
+    url: https://etc5523-2021.github.io/blog-myan0065/about.html
+    affiliation: Monash NUMBATs
+    affiliation_url: https://numbat.space/
+date: 09-12-2021
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      out.width = "80%",
+                      fig.align = "center")
+```
+
+```{r package}
+library(readxl)
+library(here)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(naniar)
+library(kableExtra)
+library(rworldmap)
+library(plotly)
+library(DT)
+```
+
+```{r read-data}
+vacc_se <- read_csv(here("data/data_se.csv"))
+surv_se <- read_csv(here("data/wdata_COVID_2207.csv"))
+surv_dict <- read_excel(here("data/Codebook_2207.xlsx"), sheet = 2, range = "b1:d40")
+```
+
+## Introduction 
+
+## Data Description 📄
+
+### COVID -19 Survey Data
+
+```{r}
+surv_dict %>% 
+  datatable(options = list(pageLength = 6,
+                            columnDefs = list(list(className = 'dt-left', targets = 1:3))),
+            colnames = c("Variable", "Original Question / Description", "Value Labels"),
+            caption = "Data Dictionary")
+```
+```{r}
+surv_se %>% 
+  filter(country_label == "Sweden") %>% 
+miss_var_summary() %>% 
+    datatable(options = list(pageLength = 5,
+                            columnDefs = list(list(className = 'dt-center', targets = 2:3))),
+            caption = "Missing Values in Each Variable",
+            colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
+```
+
+
+### Vaccination Data
+Dataset used in the post was sourced from <a href=https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea> European Centre for Disease Prevention and Control</a>, it provides open source data for infectious diseases. This dataset contains vaccination data for `r length(unique(vacc_se$ReportingCountry))` European countries, there are `r ncol(vacc_se)` variables and `r nrow(vacc_se)` observations and all data are up to date, data dictionary is shown in Figure \@ref(fig:dict).
+
+```{r dict, fig.cap = "Data Dictionary"}
+tribble(
+  ~Variable, ~Class, ~Description,
+  #---|----|--------------
+  "YearWeekISO", "Character", "Date when the vaccine was administered. Only weeks are allowed (e.g. “2021-W01”).",
+  "FirstDose", "Numeric", "Number of first dose vaccine administered to individuals during the reporting week.",
+  "FirstDoseRefused", "Numeric", "Number of individuals refusing the first vaccine dose.",
+  "SeconDose", "Numeric", "Number of second dose vaccine administered to individuals during the reporting week.",
+  "Unknown Dose", "Numeric", "Number of doses administered during the reporting week where the type of dose (first or second) was not specified.",
+  "NumberDosesReceived", "Numeric", "Number of vaccine doses distributed by the manufacturers to the country during the reporting week.",
+  "Region", "Character", "Country code",
+  "Polulation", "Numeric", "Age-specific population for the country",
+  "Reporting Country", "Character", "Two-letter county code",
+  "Target Group","Character", "Target group for vaccination. “ALL” for the overall figures, “HCW” for healthcare workers and age-groups.",
+  "Vaccine", "Charater", "Name of vaccine. AZ = AstraZeneca, BECNBG (previously CN) = Beijing CNBG, BHACOV = Bharat, COM = Pfizer/BioNTech, JANSS = Janssen, HAYATVAC = Hayat VAC, MOD = Moderna, QAZVAQ = QazCovid-In, SIICOV = Covishield – SII, SIN = Sinovac, SPU = Sputnik V - Gamaleya, SRCVB = EpiVacCorona – SRCVB, WUCNBG = Inactivated – Wuhan CNBG, UNK = UNKNOWN, ZFUZ = Sino-Uzbek - ZF-UZVAC",
+  "Denominator", "Numeric", "Population denominators for target groups.") %>% 
+    datatable(options = list(pageLength = 6,
+                            columnDefs = list(list(className = 'dt-left', targets = 1:3))),
+            caption = "Data Dictionary")
+```
+This post mainly focuses on analysing the data for Sweden, Figure \@ref(fig:missing) shows the number of missing values and their percentage in each variable in the sub-dataset of Sweden. Variable FirstDoseRefused and Denominator will not be used for the analysis and they can be omitted. As the number of vaccine doses distributed to the country were not on a weekly basis, therefore there are 94% of missing values.
+<br><br>
+
+```{r missing, fig.cap = "Summary of Missing Value in Sub-dataset for Sweden"}
+vacc_se %>% 
+  filter(ReportingCountry == "SE") %>% 
+miss_var_summary() %>% 
+    datatable(options = list(pageLength = 5,
+                            columnDefs = list(list(className = 'dt-center', targets = 2:3))),
+            caption = "Missing Values in Each Variable",
+            colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
+```
+
+## Data Exploration 🔍
+
+```{r}
+# remove "w" in string
+vacc_se$YearWeekISO <- gsub("[[:alpha:]]", "", vacc_se$YearWeekISO)
+
+# add month column
+vacc_se$month <- strsplit(vacc_se$YearWeekISO, "-") 
+
+vacc_se$month <- sapply(vacc_se$month,function(x) {
+  year_week <- unlist(x)
+  year <- year_week[1]
+  week <- year_week[2]
+  start_date <- as.Date(paste0(year,'-01-01'))
+  date <- start_date+weeks(week)
+  return (as.character(date))
+})
+
+vacc_se$month <- month(vacc_se$month)
+
+vacc_se$month <- ifelse(str_starts(vacc_se$YearWeekISO, "2020"), "12", vacc_se$month)
+
+vacc_se <- vacc_se %>% 
+  separate(YearWeekISO, c("year", "week"), "-") %>% 
+  relocate(month, .after = week) 
+```
+
+
+
+
+
+
+
+
+
+## Reference
+
+ECDC, European Centre for Disease Prevention and Control. (2021, September, 9). "Data on COVID-19 vaccination in the EU/EEA", <https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea>
+
+
+
+
+
+
+
+
