@@ -38,6 +38,7 @@ library(kableExtra)
 library(rworldmap)
 library(plotly)
 library(DT)
+library(scales)
 ```
 
 ```{r read-data}
@@ -115,42 +116,68 @@ miss_var_summary() %>%
 
 ```{r surv-cleaning}
 surv_long <- surv_se %>% 
-  select(!c(1:6, "audit_sum", "country", "week", "n", "weight", "popweight")) %>% 
+  select(!c(1:6, "audit_sum", "country", "week", "weight", "popweight")) %>% 
   relocate(change_income, .after = consumer) %>% 
   mutate(diagnose = as.character(diagnose),
          sex = as.character(sex)) %>% 
   pivot_longer(cols = "change_income":"change_illdrugs",
                names_to = "covid_survey",
                values_to = "score")
+
+surv_long_se <- surv_long %>% 
+    filter(country_label == "Sweden")
+  
 ```
 
 #### Mental Health
 
 ```{r}
-surv_long$agegr[surv_long$agegr == "1"] <- "18-34 years"
-surv_long$agegr[surv_long$agegr == "2"] <- "35-54 years"
-surv_long$agegr[surv_long$agegr == "3"] <- "55-98 years"
+surv_long_se$agegr[surv_long_se$agegr == "1"] <- "18-34 years"
+surv_long_se$agegr[surv_long_se$agegr == "2"] <- "35-54 years"
+surv_long_se$agegr[surv_long_se$agegr == "3"] <- "55-98 years"
 
-surv_long %>% 
+n1 <- surv_se %>% 
   filter(country_label == "Sweden",
-         covid_survey == "distress") %>% 
+         agegr == "1") %>% 
+  count()
+
+n2 <- surv_se %>% 
+  filter(country_label == "Sweden",
+         agegr == "2") %>% 
+  count()
+
+n3 <- n2 <- surv_se %>% 
+  filter(country_label == "Sweden",
+         agegr == "3") %>% 
+  count()
+
+newcol <- c(0.67, 0.31, 0.68, 0.32, 0.64, 0.36)
+
+newcol <- percent(newcol, 1)
+
+df <- surv_long_se %>% 
+  filter(covid_survey == "distress") %>% 
   group_by(agegr, score) %>% 
-  summarise(count = n()) %>% 
-  ggplot(aes(x = score,
+  summarise(count = n()) 
+
+df$pct <- newcol
+
+df %>% 
+  ggplot(aes(x = agegr,
              y = count,
-             fill = score,
-             group = score)) +
-  geom_col() +
-  facet_wrap(vars(agegr), ncol = 3, scale = "free_y") +
-  scale_fill_manual(values = c("#bebada", "#bebada")) +
-  scale_x_discrete(labels = c("Yes", "No")) +
-  geom_text(aes(label = count, fill = NULL, vjust = 1.5),
+             fill = score)) +
+  geom_bar(position = "fill", stat = "identity") +
+  scale_fill_manual(values = c("#fc8d62", "#66c2a5"),
+                    labels = c("Yes", "No")) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_text(aes(label = pct), 
+            position = position_fill(vjust = 0.5),
             size = 3,
             colour = "white") +
   theme_light() +
-  theme(legend.position = "none") +
-  labs(x = "Answer",
-       y = "Total Count",
+  labs(x = "Age Group",
+       y = "Percentage",
+       fill = "Answer",
        title = "Have you found the spread of COVID-19 stressful?",
        subtitle = "Year: 2020",
        caption = "Data Source: Swedish COVID-19 Data Portal") +
@@ -172,16 +199,15 @@ surv_long %>%
 
 #### Financial Status
 ```{r}
-surv_long$residence[surv_long$residence == "1"] <- "Village/fram"
-surv_long$residence[surv_long$residence == "2"] <- "Small city"
-surv_long$residence[surv_long$residence == "3"] <- "Medium-size city"
-surv_long$residence[surv_long$residence == "4"] <- "Large city"
-surv_long$residence[surv_long$residence == "5"] <- "Very large city"
+surv_long_se$residence[surv_long_se$residence == "1"] <- "Village/fram"
+surv_long_se$residence[surv_long_se$residence == "2"] <- "Small city"
+surv_long_se$residence[surv_long_se$residence == "3"] <- "Medium-size city"
+surv_long_se$residence[surv_long_se$residence == "4"] <- "Large city"
+surv_long_se$residence[surv_long_se$residence == "5"] <- "Very large city"
 
 
-surv_long %>% 
-  filter(country_label == "Sweden",
-         covid_survey == "change_financial",
+surv_long_se %>% 
+  filter(covid_survey == "change_financial",
          residence != "." ) %>% 
   group_by(residence, score) %>% 
   summarise(count = n()) %>% 
@@ -214,9 +240,8 @@ surv_long %>%
 ##### Drinking & Smoking 
 ```{r}
 # alcohol
-p1 <- surv_long %>% 
-  filter(country_label == "Sweden",
-         covid_survey == "change_alc_freq",
+p1 <- surv_long_se %>% 
+  filter(covid_survey == "change_alc_freq",
          score != "." ) %>% 
   group_by(score) %>% 
   summarise(count = n()) %>% 
@@ -242,9 +267,8 @@ p1 <- surv_long %>%
         axis.text.y = element_text(size = 8))
 
 # smoke
-p2 <- surv_long %>% 
-  filter(country_label == "Sweden",
-         covid_survey == "change_smoke",
+p2 <- surv_long_se %>% 
+  filter(covid_survey == "change_smoke",
          score != "." ) %>% 
   group_by(score) %>% 
   summarise(count = n()) %>% 
@@ -279,9 +303,8 @@ p2 <- surv_long %>%
 
 ```{r}
 # cannabis
-p3 <- surv_long %>% 
-  filter(country_label == "Sweden",
-         covid_survey == "change_cannabis",
+p3 <- surv_long_se %>% 
+  filter(covid_survey == "change_cannabis",
          score != "." ) %>% 
   group_by(score) %>% 
   summarise(count = n()) %>% 
@@ -307,9 +330,8 @@ p3 <- surv_long %>%
 
 
 # drugs
-p4 <- surv_long %>% 
-  filter(country_label == "Sweden",
-         covid_survey == "change_illdrugs",
+p4 <- surv_long_se %>% 
+  filter(covid_survey == "change_illdrugs",
          score != "." ) %>% 
   group_by(score) %>% 
   summarise(count = n()) %>% 
