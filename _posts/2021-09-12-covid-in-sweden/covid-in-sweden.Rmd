@@ -28,6 +28,7 @@ knitr::opts_chunk$set(echo = FALSE,
 library(readxl)
 library(here)
 library(ggplot2)
+library(treemapify)
 library(patchwork)
 library(dplyr)
 library(tidyverse)
@@ -35,7 +36,6 @@ library(tidytext)
 library(lubridate)
 library(naniar)
 library(kableExtra)
-library(rworldmap)
 library(plotly)
 library(DT)
 library(scales)
@@ -385,10 +385,154 @@ vacc_se$month <- ifelse(str_starts(vacc_se$YearWeekISO, "2020"), "12", vacc_se$m
 vacc_se <- vacc_se %>% 
   separate(YearWeekISO, c("year", "week"), "-") %>% 
   relocate(month, .after = week) 
+
+vacc_se$yearMonth <- paste(vacc_se$year, vacc_se$month, sep = "-")
+
+```
+
+#### Fully Vacinated Numbers
+
+<style>
+.html-widget {
+    margin: auto;
+}
+</style>
+
+```{r}
+vacc_se_long <- vacc_se %>% 
+  pivot_longer(cols = c("FirstDose", "SecondDose"),
+               names_to = "dose",
+               values_to = "entry")
+
+
+plot_vacc_1 <- vacc_se_long %>% 
+  rename(Month = yearMonth) %>% 
+  filter(ReportingCountry == "SE",
+         TargetGroup == "ALL") %>% 
+  group_by(Month, dose) %>% 
+  summarise(count = sum(entry)) %>% 
+  ggplot(aes(x = Month,
+             y = count,
+             group = dose,
+             fill = dose)) +
+  geom_area(alpha = 0.8, size = 0.5, colour = "white") +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE),
+                     breaks=seq(0, 6000000, 1000000)) +
+  scale_fill_manual(values = c("#66c2a5", "#fc8d62")) +
+  theme_light() +
+  labs(y = "Number of Doses Administered",
+       title = "Trend of First and Second Dose Vaccine Administered",
+       fill = "Dose",
+       caption = "European Centre for Disease Prevention and Control") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        axis.text.y = element_text(size = 8))
+
+ggplotly(plot_vacc_1) %>% 
+       layout(title = list(text = paste0("Trend of First and Second Dose Vaccine Administered",
+                                    "<br>",
+                                    "<sup>",
+                                    "Year: Dec 2020 - Sep 2021",
+                                    "</sup>")),
+           annotations = list(x = 1, y = -0.5,
+                              text = "Data Source: European Centre for Disease Prevention and Control",
+                              showarrow = F,
+                              font=list(size=8)))
+
 ```
 
 
 
+```{r}
+plot_vacc_2 <- vacc_se %>% 
+  filter(ReportingCountry == "SE",
+         TargetGroup %in% c("Age18_24", 
+                            "Age25_49", 
+                            "Age50_59", 
+                            "Age60_69", 
+                            "Age70_79", 
+                            "Age80+")) %>% 
+  rename(Month = yearMonth) %>% 
+  group_by(TargetGroup, Month) %>%
+  summarise(count = sum(SecondDose)) %>%
+  ungroup() %>% 
+  ggplot(aes(x = Month,
+             y = count,
+             group = TargetGroup,
+             colour = TargetGroup)) +
+  geom_line() +
+  geom_point(size = 0.6) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE),
+                     limits = c(0, 1200000),
+                     breaks=seq(0, 1400000, 100000)) +
+  scale_colour_brewer(palette = "Set2",
+                      labels = c("Age 18-24",
+                                 "Age 25-49",
+                                 "Age 50-59",
+                                 "Age 60-69",
+                                 "Age 70-79",
+                                 "Age 80+")) +
+  theme_light() +
+  labs(y = "Number of Second Doese Vaccine Administered",
+       title = "Trend of Fully Vaccinated Numbers, by Age",
+       colour = "Age Group",
+       caption = "European Centre for Disease Prevention and Control") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        axis.text.y = element_text(size = 8))
+
+ggplotly(plot_vacc_2) %>% 
+       layout(title = list(text = paste0("Trend of Fully Vaccinated Numbers, by Age",
+                                    "<br>",
+                                    "<sup>",
+                                    "Year: Dec 2020 - Sep 2021",
+                                    "</sup>")),
+           annotations = list(x = 1, y = -0.5,
+                              text = "Data Source: Swedish COVID-19 Data Portal",
+                              showarrow = F,
+                              font=list(size=8)))
+
+```
+
+
+
+
+```{r}
+vacc_se$Vaccine[vacc_se$Vaccine == "COM"] <- "Pfizer"
+vacc_se$Vaccine[vacc_se$Vaccine == "MOD"] <- "Moderna"
+vacc_se$Vaccine[vacc_se$Vaccine == "AZ"] <- "AstraZenecar"
+vacc_se$Vaccine[vacc_se$Vaccine == "UNK"] <- "Unknown"
+
+
+vacc_se %>% 
+  filter(ReportingCountry == "SE",
+         TargetGroup == "ALL") %>% 
+  group_by(Vaccine) %>% 
+  summarise(count = sum(SecondDose)) %>% 
+  ggplot(aes(area = count,
+             fill = Vaccine,
+             label = paste0(Vaccine, "\n", prettyNum(count, big.mark = ",")),
+             subgroup = Vaccine)) +
+  geom_treemap() +
+  geom_treemap_subgroup_border(colour = "white", size = 1) +
+  geom_treemap_text(color = "white", size = 18, min.size = 1) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(fill = "Vaccine",
+       title = "Type of Vaccines Adminstered in Sweden",
+       subtitle = "Year: Dec 2020 - Sep 2021",
+       caption = "Data Source: Swedish COVID-19 Data Portal") +
+  theme(axis.text.y = element_text(size = 6),
+        plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0)) 
+
+```
+
+
+```{r}
+
+```
 
 
 
