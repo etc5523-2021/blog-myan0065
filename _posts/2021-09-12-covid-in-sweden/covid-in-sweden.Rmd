@@ -28,8 +28,10 @@ knitr::opts_chunk$set(echo = FALSE,
 library(readxl)
 library(here)
 library(ggplot2)
+library(patchwork)
 library(dplyr)
 library(tidyverse)
+library(tidytext)
 library(lubridate)
 library(naniar)
 library(kableExtra)
@@ -46,18 +48,22 @@ surv_dict <- read_excel(here("data/Codebook_2207.xlsx"), sheet = 2, range = "b1:
 
 ## Introduction 
 
+In this post, we will continue to explore the COVID status in Europe, but in a different country, Sweden. Two key topics will be addressed.
+
 ## Data Description 📄
 
 ### COVID -19 Survey Data
 
-```{r}
+This survey data is obtained from <a href=https://covid19dataportal.se/data_types/all/data/> Swedish COVID-19 Data Portal</a>, it is publicly accessible and under MIT license. It is a survey done by 40,060 people from `r length(unique(surv_se$country_label))` different European countries, all the entries were done between April to July in 2020 when COVID-19 hit Europe. There are `r ncol(surv_se)` variables and `r nrow(surv_se)` observations, data dictionary and missing values are shown in Figure \@ref(fig:surv-dict) and Figure \@ref(fig:surv-miss).
+
+```{r surv-dict, fig.cap = "COVID-19 Survey 2020, Europe"}
 surv_dict %>% 
   datatable(options = list(pageLength = 6,
                             columnDefs = list(list(className = 'dt-left', targets = 1:3))),
             colnames = c("Variable", "Original Question / Description", "Value Labels"),
             caption = "Data Dictionary")
 ```
-```{r}
+```{r surv-miss, fig.cap = "Summary of Missing Value in COVID-19 Survey Data"}
 surv_se %>% 
   filter(country_label == "Sweden") %>% 
 miss_var_summary() %>% 
@@ -69,9 +75,9 @@ miss_var_summary() %>%
 
 
 ### Vaccination Data
-Dataset used in the post was sourced from <a href=https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea> European Centre for Disease Prevention and Control</a>, it provides open source data for infectious diseases. This dataset contains vaccination data for `r length(unique(vacc_se$ReportingCountry))` European countries, there are `r ncol(vacc_se)` variables and `r nrow(vacc_se)` observations and all data are up to date, data dictionary is shown in Figure \@ref(fig:dict).
+Dataset used in the post was sourced from <a href=https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea> European Centre for Disease Prevention and Control</a>, it provides open source data for infectious diseases. This dataset contains vaccination data for `r length(unique(vacc_se$ReportingCountry))` European countries, there are `r ncol(vacc_se)` variables and `r nrow(vacc_se)` observations and all data are up to date, data dictionary is shown in Figure \@ref(fig:vacc).
 
-```{r dict, fig.cap = "Data Dictionary"}
+```{r vacc, fig.cap = "Data Dictionary"}
 tribble(
   ~Variable, ~Class, ~Description,
   #---|----|--------------
@@ -92,7 +98,6 @@ tribble(
             caption = "Data Dictionary")
 ```
 This post mainly focuses on analysing the data for Sweden, Figure \@ref(fig:missing) shows the number of missing values and their percentage in each variable in the sub-dataset of Sweden. Variable FirstDoseRefused and Denominator will not be used for the analysis and they can be omitted. As the number of vaccine doses distributed to the country were not on a weekly basis, therefore there are 94% of missing values.
-<br><br>
 
 ```{r missing, fig.cap = "Summary of Missing Value in Sub-dataset for Sweden"}
 vacc_se %>% 
@@ -105,6 +110,235 @@ miss_var_summary() %>%
 ```
 
 ## Data Exploration 🔍
+
+### COVID-19 Survey
+
+```{r surv-cleaning}
+surv_long <- surv_se %>% 
+  select(!c(1:6, "audit_sum", "country", "week", "n", "weight", "popweight")) %>% 
+  relocate(change_income, .after = consumer) %>% 
+  mutate(diagnose = as.character(diagnose),
+         sex = as.character(sex)) %>% 
+  pivot_longer(cols = "change_income":"change_illdrugs",
+               names_to = "covid_survey",
+               values_to = "score")
+```
+
+#### Mental Health
+
+```{r}
+surv_long$agegr[surv_long$agegr == "1"] <- "18-34 years"
+surv_long$agegr[surv_long$agegr == "2"] <- "35-54 years"
+surv_long$agegr[surv_long$agegr == "3"] <- "55-98 years"
+
+surv_long %>% 
+  filter(country_label == "Sweden",
+         covid_survey == "distress") %>% 
+  group_by(agegr, score) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x = score,
+             y = count,
+             fill = score,
+             group = score)) +
+  geom_col() +
+  facet_wrap(vars(agegr), ncol = 3, scale = "free_y") +
+  scale_fill_manual(values = c("#bebada", "#bebada")) +
+  scale_x_discrete(labels = c("Yes", "No")) +
+  geom_text(aes(label = count, fill = NULL, vjust = 1.5),
+            size = 3,
+            colour = "white") +
+  theme_light() +
+  theme(legend.position = "none") +
+  labs(x = "Answer",
+       y = "Total Count",
+       title = "Have you found the spread of COVID-19 stressful?",
+       subtitle = "Year: 2020",
+       caption = "Data Source: Swedish COVID-19 Data Portal") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0))
+
+# ggplotly(plot1) %>% 
+#     layout(title = list(text = paste0("Have you found the spread of COVID-19 stressful?",
+#                                     "<br>",
+#                                     "<sup>",
+#                                     "Year: 2020",
+#                                     "</sup>")),
+#            annotations = list(x = 1, y = -5.4, 
+#                               text = "Data Source: Swedish COVID-19 Data Portal",
+#                               xref='paper',
+#                               showarrow = F,
+#                               font=list(size=6)))
+```
+
+#### Financial Status
+```{r}
+surv_long$residence[surv_long$residence == "1"] <- "Village/fram"
+surv_long$residence[surv_long$residence == "2"] <- "Small city"
+surv_long$residence[surv_long$residence == "3"] <- "Medium-size city"
+surv_long$residence[surv_long$residence == "4"] <- "Large city"
+surv_long$residence[surv_long$residence == "5"] <- "Very large city"
+
+
+surv_long %>% 
+  filter(country_label == "Sweden",
+         covid_survey == "change_financial",
+         residence != "." ) %>% 
+  group_by(residence, score) %>% 
+  summarise(count = n()) %>% 
+  mutate(score = reorder_within(score, count, residence)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = score,
+             y = count,
+             fill = residence)) +
+  geom_col() +
+  facet_wrap(vars(residence),
+             scales = "free") +
+  scale_x_reordered() +
+  scale_fill_brewer(palette = "Set2") +
+  geom_text(aes(label = count, fill = NULL, vjust = 1.2),
+            size = 2.5,
+            colour = "white") +
+  theme_light() +
+  theme(legend.position = "none") +
+  labs(x = "Answer",
+       y = "Total Count",
+       title = "In the past month, have you experienced any negative consequences \nto your employment or financial situation due to the spread of COVID-19?",
+       fill = "Answer",
+       subtitle = "Year: 2020",
+       caption = "Answer: 0 = not at all, 1 = to some degree, 2 = to a substantial degree, 3 = to a very high degree \nData Source: Swedish COVID-19 Data Portal") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0))
+  
+```
+#### Behaviour
+##### Drinking & Smoking 
+```{r}
+# alcohol
+p1 <- surv_long %>% 
+  filter(country_label == "Sweden",
+         covid_survey == "change_alc_freq",
+         score != "." ) %>% 
+  group_by(score) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x = fct_reorder(score, count),
+             y = count,
+             fill = score)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("#66c2a5","#66c2a5", "#66c2a5", "#66c2a5", "#66c2a5")) +
+  scale_x_discrete(labels = c("much more", "slightly more", "much less", "slightly less", "no change")) +
+  scale_y_continuous(breaks=seq(0, 500, 100)) +
+  geom_text(aes(label = count, fill = NULL, hjust = -0.1),
+            size = 3,
+            colour = "#66c2a5") +
+  theme_light() +
+  labs(x = "Answer",
+       y = "Total Count",
+       title = "Did you drink alcohol less or more often in the past month?",
+       subtitle = "Year: 2020") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        legend.position = "none",
+        axis.text.y = element_text(size = 8))
+
+# smoke
+p2 <- surv_long %>% 
+  filter(country_label == "Sweden",
+         covid_survey == "change_smoke",
+         score != "." ) %>% 
+  group_by(score) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x = fct_reorder(score, count),
+             y = count,
+             fill = score)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("#fc8d62","#fc8d62", "#fc8d62", "#fc8d62", "#fc8d62", "#fc8d62")) +
+  scale_x_discrete(labels = c("much more", "slightly less", "slightly more", "much less", "no change", "do not consume")) +
+  scale_y_continuous(breaks=seq(0, 700, 100)) +
+  geom_text(aes(label = count, fill = NULL, hjust = -0.1),
+            size = 3,
+            colour = "#fc8d62",
+            angel = 90) +
+  theme_light() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(size = 8)) +
+  labs(x = "Answer",
+       y = "Total Count",
+       title = "Did you smoke less or more often in the past month?",
+       subtitle = "Year: 2020",
+       caption = "Data Source: Swedish COVID-19 Data Portal") +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0))
+
+
+(p1 / p2 ) + plot_annotation(tag_levels = 'A')
+```
+
+##### Use of Cannabis & Illegal Drugs
+
+```{r}
+# cannabis
+p3 <- surv_long %>% 
+  filter(country_label == "Sweden",
+         covid_survey == "change_cannabis",
+         score != "." ) %>% 
+  group_by(score) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x = fct_reorder(score, count),
+             y = count,
+             fill = score)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("#8da0cb","#8da0cb", "#8da0cb", "#8da0cb", "#8da0cb", "#8da0cb")) +
+  scale_x_discrete(labels = c("slightly less", "much more", "much less", "slightly more", "no change", "do not consume")) +
+  geom_text(aes(label = count, fill = NULL, hjust = -0.1),
+            size = 3,
+            colour = "#8da0cb") +
+  theme_light() +
+  labs(x = "Answer",
+       y = "Total Count",
+       title = "Did you consume cannabis less or more often in the past month?",
+       subtitle = "Year: 2020") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        legend.position = "none",
+        axis.text.y = element_text(size = 8))
+
+
+# drugs
+p4 <- surv_long %>% 
+  filter(country_label == "Sweden",
+         covid_survey == "change_illdrugs",
+         score != "." ) %>% 
+  group_by(score) %>% 
+  summarise(count = n()) %>% 
+  ggplot(aes(x = fct_reorder(score, count),
+             y = count,
+             fill = score)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = c("#e78ac3","#e78ac3", "#e78ac3", "#e78ac3", "#e78ac3", "#e78ac3")) +
+  scale_x_discrete(labels = c("slightly more", "much less", "no change", "do not consume")) +
+  geom_text(aes(label = count, fill = NULL, hjust = -0.1),
+            size = 3,
+            colour = "#e78ac3") +
+  theme_light() +
+  labs(x = "Answer",
+       y = "Total Count",
+       title = "Did you use illegal drugs less or more often in the past month?",
+       subtitle = "Year: 2020",
+       caption = "Data Source: Swedish COVID-19 Data Portal") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        legend.position = "none",
+        axis.text.y = element_text(size = 8))
+
+(p3 / p4) + plot_annotation(tag_levels = 'A')
+```
+
+
+### Current Vaccination Status
 
 ```{r}
 # remove "w" in string
