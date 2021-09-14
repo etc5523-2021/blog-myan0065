@@ -115,7 +115,7 @@ miss_var_summary() %>%
 ## Data Exploration 🔍
 
 ### COVID-19 Survey
-A survey has been done to examine the impact of COVID-19 on people's mental health and alcohol consumption in 21 European countries between April and July 2020 after COVID-19 hit Europe. Figure \@ref(fig:mental) shows the response on how they find the current situation of the spread of COVID-19  of the 808 Swedes who participated on the survey. They were divided into 3 age groups, 18-34 years, 35-54 years and 55-98 years. As it can be seen from the graph, approximately 60% of the people from each group found the pandemic stressful, and this is not surprising. You would probably think that this may cause an increase in alcohol consumption as people would turn to alcohol to cope with the stress, however, Figure \@ref(fig:alco) reveals a different story. Compare to some of the European countries like United Kingdom, Ireland, Denmark, the Swedes seemed to consume less alcohol during the pandemic, with the majority of the people did not change their drinking habits and people who drank less were in the second largest group, only a small proportion of people consuming more alcohol. This pattern was more obvious in the younger cohorts, there was a large proportion of people who is age between 18-24 years consume less more alcohol than the other age groups. The restrictions implemented by the Swedish government have greatly reduced social gatherings where alcohol consumption usually was expected and often pressured to happen, and this is the reason for the reduction of alcohol use among the younger cohorts as they generally consume more alcohol in a social event (Movendi, 2020). A research found that during March - April 2020, alcohol consumption among Swedish adults and youth in the lowest in the EU (Nordic Alcohol and Drug Policy Network, n.d). In contrast, there were quite a lot of people in the other 3 countries consumed more alcohol than pre-pandemic, especially for United Kingdom and Ireland, the top answer was "slightly more" and it was the second most answer for Denmark. One possible explanation for this diverging patterns could be the less restrict alcohol policies in the United Kingdom, the U.K government declares alcohol shops are essential businesses (Forbes, 2020), whereas in Sweden, there are more restrictive polices in place, such as, alcohol can only be purchased from a government owned liquor store and alcohol ban after 10pm etc.
+A survey has been done to examine the impact of COVID-19 on people's mental health and alcohol consumption in 21 European countries between April and July 2020 after COVID-19 hit Europe. Figure \@ref(fig:mental) shows the response on how they find the current situation of the spread of COVID-19  of the 808 Swedes who participated on the survey. They were divided into 3 age groups, 18-34 years, 35-54 years and 55-98 years. As it can be seen from the graph, approximately 60% of the people from each group found the pandemic stressful, and this is not surprising. You would probably think that this may cause an increase in alcohol consumption as people would turn to alcohol to cope with the stress, however, Figure \@ref(fig:alco) reveals a different story. Compare to some of the European countries like United Kingdom, Ireland, Denmark, the Swedes seemed to consume less alcohol during the pandemic, with the majority of the people did not change their drinking habits and people who drank less were in the second largest group, only a small proportion of people consuming more alcohol. This pattern was more obvious in the younger cohorts, there was a large proportion of people who is age between 18-24 years consume less more alcohol than the other age groups (see Figure \@ref(fig:alco-age)). The restrictions implemented by the Swedish government have greatly reduced social gatherings where alcohol consumption usually was expected and often pressured to happen, and this is the reason for the reduction of alcohol use among the younger cohorts as they generally consume more alcohol in social events (Movendi, 2020). A research found that during March - April 2020, alcohol consumption among Swedish adults and youth in the lowest in the EU (Nordic Alcohol and Drug Policy Network, n.d). In contrast, there were quite a lot of people in the other 3 countries consumed more alcohol than pre-pandemic, especially for United Kingdom and Ireland, the top answer was "slightly more" and it was the second most answer for Denmark. One possible explanation for this diverging patterns could be the less restrict alcohol policies in the United Kingdom, the U.K government declares alcohol shops are essential businesses (Forbes, 2020), whereas in Sweden, there are more restrictive polices in place, such as, alcohol can only be purchased from a government owned liquor store and alcohol ban after 10pm etc.
 
 ```{r surv-cleaning}
 surv_long <- surv_se %>% 
@@ -404,6 +404,13 @@ surv_long_se %>%
 
 
 ### Current Vaccination Status
+
+Sweden has recorded two waves of COVID in the late 2020 to early 2021 and March to June this year.
+After a year since the coronavirus emerged, the first vaccines developed by the global effort started being distributed round the world in the late 2020. Sweden began their vaccine programme on the 27th Dec after the approval of Pfizer vaccine.
+
+
+
+
 <style>
 .html-widget {
     margin: auto;
@@ -415,10 +422,11 @@ se <- world %>%
   filter(location == "Sweden") %>% 
   select(location,
          date,
-         total_cases,
-         new_cases,
+         new_cases_per_million,
+         new_deaths_per_million,
          total_vaccinations,
          new_vaccinations,
+         new_vaccinations_smoothed,
          people_vaccinated,
          people_vaccinated_per_hundred,
          people_fully_vaccinated,
@@ -426,38 +434,85 @@ se <- world %>%
 ```
 
 ```{r newcases}
-# se_mean <- se %>% 
-#   select(date,
-#          new_cases) %>% 
-#   mutate(mean_7 = rollmean(new_cases, k = 30, fill = NA)) 
-
-plot1 <- se %>% 
+plot1 <- world %>% 
+  select(location,
+         date,
+         new_cases_per_million) %>% 
+  filter(location %in% c("Sweden",
+                         "Germany",
+                         "Denmark",
+                         "Finland",
+                         "Norway")) %>% 
   ggplot(aes(x = date,
-             y = new_cases)) +
-  geom_col(fill = "#fc8d62") +
-  gghighlight(new_cases %in% c("32485", "21802")) +
+             y = new_cases_per_million,
+             colour = location)) +
+  geom_line(size = 0.3) +
+  geom_point(size = 0.2) +
+  scale_colour_brewer(palette = "Set2") +
   theme_light() +
   labs(x = "Date",
-       y = "Total Confirmed New Cases",
-       title = "Daily New Cases in Sweden",
+       y = "Daily Confirmed New Cases",
+       colour = "Type",
+       title = "Daily New Cases per Million People",
        subtitle = "Year: Feb 2020 - Sep 2021") +
   scale_x_date(date_breaks = "1 month") +
-  scale_y_continuous(labels = scales::comma,
-                     breaks=seq(0, 30000, 5000)) +
+  scale_y_continuous(labels = scales::comma) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         axis.text.y = element_text(size = 8))
 
 ggplotly(plot1) %>%
-  layout(title = list(text = paste0("Daily New Cases in Sweden",
+  layout(title = list(text = paste0("Daily New Cases per Million People",
                                     "<br>",
                                     "<sup>",
                                     "Year: Feb 2020 - Sep 2021",
                                     "</sup>")),
          annotations = list(x = 1, y = -0.5,
-                              text = "Data Source: Swedish COVID-19 Data Portal",
+                              text = "Data Source: Our World Data",
                               showarrow = F,
                               font=list(size=8)))
+  
+```
 
+```{r newdeaths}
+plot2 <- world %>% 
+  select(location,
+         date,
+         new_deaths_per_million) %>% 
+  filter(location %in% c("Sweden",
+                         "Germany",
+                         "Denmark",
+                         "Finland",
+                         "Norway"),
+         !is.na(new_deaths_per_million)) %>% 
+  group_by(location) %>% 
+  mutate(cumulative_sum = cumsum(new_deaths_per_million)) %>% 
+  ggplot(aes(x = date,
+             y = cumulative_sum,
+             colour = location)) +
+  geom_line(size = 0.3) +
+  geom_point(size = 0.2) +
+  scale_colour_brewer(palette = "Set2") +
+  theme_light() +
+  labs(x = "Date",
+       y = "Number of Deaths",
+       colour = "Country",
+       title = "Accumulative Deaths per Million People",
+       subtitle = "Year: Feb 2020 - Sep 2021") +
+  scale_x_date(date_breaks = "1 month") +
+  scale_y_continuous(labels = scales::comma) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        axis.text.y = element_text(size = 8))
+
+ggplotly(plot2) %>%
+  layout(title = list(text = paste0("Accumulative Deaths per Million People",
+                                    "<br>",
+                                    "<sup>",
+                                    "Year: Feb 2020 - Sep 2021",
+                                    "</sup>")),
+         annotations = list(x = 1, y = -0.5,
+                              text = "Data Source: Our World Data",
+                              showarrow = F,
+                              font=list(size=8)))
 ```
 
 
@@ -491,32 +546,31 @@ vacc_se$yearMonth <- paste(vacc_se$year, vacc_se$month, sep = "-")
 
 #### Fully Vacinated Numbers
 
-
-
 ```{r}
-vacc_se_long <- vacc_se %>% 
-  pivot_longer(cols = c("FirstDose", "SecondDose"),
+plot3 <- world %>% 
+  select(location,
+         date,
+         people_vaccinated,
+         people_fully_vaccinated) %>% 
+  rename("Fully Vaccinated" = people_fully_vaccinated,
+         "First Dose" = people_vaccinated) %>% 
+  filter(location == "Sweden") %>% 
+  pivot_longer(cols = c("First Dose", 
+                        "Fully Vaccinated"),
                names_to = "dose",
-               values_to = "entry")
-
-
-plot_vacc_1 <- vacc_se_long %>% 
-  rename(Month = yearMonth) %>% 
-  filter(ReportingCountry == "SE",
-         TargetGroup == "ALL") %>% 
-  group_by(Month, dose) %>% 
-  summarise(count = sum(entry)) %>% 
-  ggplot(aes(x = Month,
-             y = count,
+               values_to = "entries") %>% 
+  ggplot(aes(x = date,
+             y = entries,
              group = dose,
              fill = dose)) +
   geom_area(alpha = 0.8, size = 0.5, colour = "white") +
-  scale_y_continuous(labels = function(x) format(x, scientific = FALSE),
-                     breaks=seq(0, 6000000, 1000000)) +
+  scale_x_date(date_breaks = "1 month") +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
   scale_fill_manual(values = c("#66c2a5", "#fc8d62")) +
   theme_light() +
-  labs(y = "Number of Doses Administered",
-       title = "Number of First and Second Dose Vaccines Administered, by Month",
+  labs(x = "Date",
+       y = "Number of Doses Administered",
+       title = "Accumulative Vaccines Administered, by Month",
        fill = "Dose",
        caption = "European Centre for Disease Prevention and Control") +
   theme(plot.caption.position = "panel",
@@ -524,8 +578,8 @@ plot_vacc_1 <- vacc_se_long %>%
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         axis.text.y = element_text(size = 8))
 
-ggplotly(plot_vacc_1) %>% 
-       layout(title = list(text = paste0("Number of First and Second Dose Vaccines Administered, by Month",
+ggplotly(plot3) %>% 
+       layout(title = list(text = paste0("Accumulative Vaccines Administered, by Month",
                                     "<br>",
                                     "<sup>",
                                     "Year: Dec 2020 - Sep 2021",
@@ -637,6 +691,8 @@ vacc_se %>%
 ## Reference
 
 ECDC, European Centre for Disease Prevention and Control. (2021, September, 9). "Data on COVID-19 vaccination in the EU/EEA", <https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea>
+
+Mathieu, E., Ritchie, H., Ortiz-Ospina, E. et al. A global database of COVID-19 vaccinations. Nat Hum Behav (2021)
 
 Movendi. (2021, May, 26). "Sweden: Youth Consumes Less Alcohol During Coronavirus Crisis", <https://movendi.ngo/news/2020/05/26/sweden-youth-consumes-less-alcohol-during-coronavirus-crisis/>
 
