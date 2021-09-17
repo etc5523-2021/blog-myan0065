@@ -10,7 +10,7 @@ This assessment is due Fri Sep 3 2021 11.55PM AEST.
 
 My selected country is Switzerland.
 
-The relevant blog post for this assessment is in covidinswitzerland.html
+The relevant blog post for this assessment is in covidinswitzerland.html, https://etc5523-2021.github.io/blog-myan0065/posts/2021-08-29-covid-in-switzerland/
 
 - [ ] Selected a country
 - [ ] Website with R markdown 
@@ -28,7 +28,7 @@ This assessment is due Fri Sep 17 2021 11.55PM AEST.
 
 My selected country is Sweden.
 
-The relevant blog post for this assessment is in covid-in-sweden.html
+The relevant blog post for this assessment is in covid-in-sweden.html, https://etc5523-2021.github.io/blog-myan0065/posts/2021-09-12-covid-in-sweden/
 
 - [ ] Selected a new country
 - [ ] Data Story 1
