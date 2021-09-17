@@ -103,7 +103,7 @@ In this post, we will continue to explore the COVID status in Europe, but in a d
 
 ### COVID -19 Survey Data
 
-Survey data is obtained from <a href=https://covid19dataportal.se/data_types/all/data/> Swedish COVID-19 Data Portal</a>, it is publicly accessible and under MIT license. It is a survey done by 40,060 people from `r length(unique(surv_se$country_label))` different European countries, all the entries were done between April to July in 2020 after COVID-19 hit Europe. There are `r ncol(surv_se)` variables and `r nrow(surv_se)` observations, data dictionary and missing values are shown in Figure \@ref(fig:surv-dict).
+Survey data is obtained from <a href=https://covid19dataportal.se/data_types/all/data/> Swedish COVID-19 Data Portal</a>, it is publicly accessible and under MIT license. It is a survey done by 40,060 people from `r length(unique(surv_se$country_label))` different European countries, all the entries were done between April to July in 2020 after COVID-19 hit Europe. There are `r ncol(surv_se)` variables and `r nrow(surv_se)` observations, data dictionary is shown in Figure \@ref(fig:surv-dict).
 
 ```{r surv-dict, fig.cap = "COVID-19 Survey 2020, Europe"}
 surv_dict %>% 
