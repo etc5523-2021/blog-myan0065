@@ -1,9 +1,11 @@
 ---
-title: "Change in Alochol Consumption and Current Vacination Status in Sweden"
+title: "Change in Alochol Consumption during Pandemic and An Update on COVID-19 in Sweden 🇸🇪"
 description: |
-  A short description of the post.
+  Is Sweden an outlier in handling COVID-19? Let's find out!
 categories:
   - COVID-19
+  - plotly
+  - Monash University
 author:
   - name: Jaffie Yang
     url: https://etc5523-2021.github.io/blog-myan0065/about.html
@@ -12,9 +14,10 @@ author:
 date: 09-12-2021
 output:
   distill::distill_article:
+    toc: true
+    toc_depth: 3
     self_contained: false
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
@@ -28,7 +31,6 @@ knitr::opts_chunk$set(echo = FALSE,
 library(readxl)
 library(here)
 library(ggplot2)
-library(gghighlight)
 library(treemapify)
 library(patchwork)
 library(dplyr)
@@ -40,6 +42,7 @@ library(kableExtra)
 library(plotly)
 library(DT)
 library(scales)
+library(vembedr)
 ```
 
 ```{r read-data}
@@ -49,15 +52,58 @@ surv_se <- read_csv(here("data/wdata_COVID_2207.csv"))
 surv_dict <- read_excel(here("data/Codebook_2207.xlsx"), sheet = 2, range = "b1:d40")
 ```
 
+```{css}
+.collapsible {
+  background-color: #fffbf0;
+  color: #325c59;
+  font-family: 'Fira Mono', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 24px;
+}
+
+
+.active, .collapsible:hover {
+  background-color: #fffbf0;
+}
+
+.content {
+  padding: 0 18px;
+  background-color: #fffbf0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+.collapsible:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #325c59;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+
+```
+
+
 ## Introduction 
 
-In this post, we will continue to explore the COVID status in Europe, but in a different country, Sweden. Two key topics will be addressed, change in alcohol consumption during pandemic and vaccination status in Sweden.
+In this post, we will continue to explore the COVID status in Europe, but in a different country, Sweden. Two key topics will be addressed, change in alcohol consumption during pandemic and COVID-19 cases, death and vaccination status in Sweden.
 
 ## Data Description 📄
 
 ### COVID -19 Survey Data
 
-This survey data is obtained from <a href=https://covid19dataportal.se/data_types/all/data/> Swedish COVID-19 Data Portal</a>, it is publicly accessible and under MIT license. It is a survey done by 40,060 people from `r length(unique(surv_se$country_label))` different European countries, all the entries were done between April to July in 2020 when COVID-19 hit Europe. There are `r ncol(surv_se)` variables and `r nrow(surv_se)` observations, data dictionary and missing values are shown in Figure \@ref(fig:surv-dict) and Figure \@ref(fig:surv-miss).
+Survey data is obtained from <a href=https://covid19dataportal.se/data_types/all/data/> Swedish COVID-19 Data Portal</a>, it is publicly accessible and under MIT license. It is a survey done by 40,060 people from `r length(unique(surv_se$country_label))` different European countries, all the entries were done between April to July in 2020 after COVID-19 hit Europe. There are `r ncol(surv_se)` variables and `r nrow(surv_se)` observations, data dictionary and missing values are shown in Figure \@ref(fig:surv-dict).
 
 ```{r surv-dict, fig.cap = "COVID-19 Survey 2020, Europe"}
 surv_dict %>% 
@@ -66,19 +112,20 @@ surv_dict %>%
             colnames = c("Variable", "Original Question / Description", "Value Labels"),
             caption = "Data Dictionary")
 ```
-```{r surv-miss, fig.cap = "Summary of Missing Value in COVID-19 Survey Data"}
-# surv_se %>% 
-#   filter(country_label == "Sweden") %>% 
-# miss_var_summary() %>% 
-#     datatable(options = list(pageLength = 5,
-#                             columnDefs = list(list(className = 'dt-center', targets = 2:3))),
-#             caption = "Missing Values in Each Variable",
-#             colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
+```{r surv-miss, eval=FALSE}
+surv_se %>%
+  filter(country_label == "Sweden") %>%
+miss_var_summary() %>%
+    datatable(options = list(pageLength = 5,
+                            columnDefs = list(list(className = 'dt-center', targets = 2:3))),
+            caption = "Missing Values in Each Variable",
+            colnames = c("Variable", "Number of Missing", "Percentage of Missing"))
 ```
 
 
 ### Vaccination Data
-Dataset used in the post was sourced from <a href=https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea> European Centre for Disease Prevention and Control</a>, it provides open source data for infectious diseases. This dataset contains vaccination data for `r length(unique(vacc_se$ReportingCountry))` European countries, there are `r ncol(vacc_se)` variables and `r nrow(vacc_se)` observations and all data are up to date, data dictionary is shown in Figure \@ref(fig:vacc).
+
+There were two datasets used in this post and they were sourced from <a href=https://github.com/owid/covid-19-data/tree/master/public/data> Our World in Data</a> and <a href=https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea> European Centre for Disease Prevention and Control</a>, they are both open data sources. The ECDC dataset contains vaccination data for `r length(unique(vacc_se$ReportingCountry))` European countries, there are `r ncol(vacc_se)` variables and `r nrow(vacc_se)` observations and all data are up to date. A sub-set of the data will be used from Our World in Data, it contains 6 colmuns and `r nrow(world)` observations Data dictionaries are as follows, Figure \@ref(fig:vacc) & Figure \@ref(fig:owid):
 
 ```{r vacc, fig.cap = "Data Dictionary"}
 tribble(
@@ -98,9 +145,23 @@ tribble(
   "Denominator", "Numeric", "Population denominators for target groups.") %>% 
     datatable(options = list(pageLength = 5,
                             columnDefs = list(list(className = 'dt-left', targets = 1:3))),
-            caption = "Data Dictionary")
+            caption = "Data Dictionary for European Centre for Disease Prevention and Control Dataset")
 ```
-This post mainly focuses on analysing the data for Sweden, Figure \@ref(fig:missing) shows the number of missing values and their percentage in each variable in the sub-dataset of Sweden. Variable FirstDoseRefused and Denominator will not be used for the analysis and they can be omitted. As the number of vaccine doses distributed to the country were not on a weekly basis, therefore there are 94% of missing values.
+
+```{r owid, fig.cap = "Data Dictionary"}
+tribble(
+  ~Variable, ~Class, ~Description,
+  #---|----|--------------
+  "location", "Character", "Geographical location",
+  "date", "Date", "Date of observation",
+  "new_cases_per_million", "Numeric", "New confirmed cases of COVID-19 per 1,000,000 people",
+  "new_deaths_per_million", "Numeric", "New deaths attributed to COVID-19 per 1,000,000 people",
+  "people_vaccinated", "Numeric", "Total number of people who received at least one vaccine dose",
+  "people_fully_vaccinated", "Numeric", "Total number of people who received all doses prescribed by the vaccination protocol") %>% 
+    datatable(options = list(pageLength = 5,
+                            columnDefs = list(list(className = 'dt-left', targets = 1:3))),
+            caption = "Data Dictionary for Our World in Data Dataset")
+```
 
 ```{r missing, fig.cap = "Summary of Missing Value in Sub-dataset for Sweden"}
 # vacc_se %>% 
@@ -114,8 +175,12 @@ This post mainly focuses on analysing the data for Sweden, Figure \@ref(fig:miss
 
 ## Data Exploration 🔍
 
-### COVID-19 Survey
-A survey has been done to examine the impact of COVID-19 on people's mental health and alcohol consumption in 21 European countries between April and July 2020 after COVID-19 hit Europe. Figure \@ref(fig:mental) shows the response on how they find the current situation of the spread of COVID-19  of the 808 Swedes who participated on the survey. They were divided into 3 age groups, 18-34 years, 35-54 years and 55-98 years. As it can be seen from the graph, approximately 60% of the people from each group found the pandemic stressful, and this is not surprising. You would probably think that this may cause an increase in alcohol consumption as people would turn to alcohol to cope with the stress, however, Figure \@ref(fig:alco) reveals a different story. Compare to some of the European countries like United Kingdom, Ireland, Denmark, the Swedes seemed to consume less alcohol during the pandemic, with the majority of the people did not change their drinking habits and people who drank less were in the second largest group, only a small proportion of people consuming more alcohol. This pattern was more obvious in the younger cohorts, there was a large proportion of people who is age between 18-24 years consume less more alcohol than the other age groups (see Figure \@ref(fig:alco-age)). The restrictions implemented by the Swedish government have greatly reduced social gatherings where alcohol consumption usually was expected and often pressured to happen, and this is the reason for the reduction of alcohol use among the younger cohorts as they generally consume more alcohol in social events (Movendi, 2020). A research found that during March - April 2020, alcohol consumption among Swedish adults and youth in the lowest in the EU (Nordic Alcohol and Drug Policy Network, n.d). In contrast, there were quite a lot of people in the other 3 countries consumed more alcohol than pre-pandemic, especially for United Kingdom and Ireland, the top answer was "slightly more" and it was the second most answer for Denmark. One possible explanation for this diverging patterns could be the less restrict alcohol policies in the United Kingdom, the U.K government declares alcohol shops are essential businesses (Forbes, 2020), whereas in Sweden, there are more restrictive policies in place, such as, alcohol can only be purchased from a government owned liquor store and alcohol ban after 10pm etc.
+### A COVID-19 Survey on Alcohol Consumption
+A survey has been done to examine the impact of COVID-19 on people's mental health and alcohol consumption in 21 European countries between April to July 2020 after COVID-19 hit Europe. Figure \@ref(fig:mental) shows the responses of 808 Swedes who participated in the survey and how they find the current situation of the spread of COVID-19. They were divided into 3 age groups, 18-34 years, 35-54 years and 55-98 years. As it can be seen from the graph, approximately 60% of the people from each group found the pandemic stressful, and this is not surprising. And you would probably think that this may cause an increase in alcohol consumption as people would turn to alcohol to cope with the stress. 
+
+However, Figure \@ref(fig:alco) tells a different story. Compare to some of the European countries like United Kingdom, Ireland, Denmark, the Swedes seemed to consume less alcohol during the pandemic, with the majority of the people did not change their drinking habits and people who drink less were in the second largest group, only a small proportion of people consuming more alcohol. This pattern was more obvious in the younger cohorts, there was a large proportion of people who are aged between 18-24 years consume less more alcohol than the other age groups (see Figure \@ref(fig:alco-age)). The restrictions implemented by the Swedish government have greatly reduced social gatherings where alcohol consumption usually was expected and often pressured to happen, and this is the reason for the reduction of alcohol use among the younger cohorts as they generally consume more alcohol in social events (Movendi, 2020). A research also found that during March - April 2020, alcohol consumption among Swedish adults and youth is the lowest in the EU (Nordic Alcohol and Drug Policy Network, n.d). 
+
+In contrast, there were quite a lot of people in the other 3 countries consumed more alcohol than pre-pandemic, especially in United Kingdom and Ireland, the most popular answer was "slightly more" and it was the second most answer for Denmark. One possible explanation for this diverging patterns could be the less restrict alcohol policies in the United Kingdom, the U.K government declares alcohol shops are essential businesses (Forbes, 2020), whereas in Sweden, there are more restrictive alcohol policies in place, such as, alcohol can only be purchased from a government owned liquor store and alcohol ban after 10pm etc.
 
 ```{r surv-cleaning}
 surv_long <- surv_se %>% 
@@ -170,6 +235,7 @@ df %>%
              y = count,
              fill = score)) +
   geom_bar(position = "fill", stat = "identity") +
+  coord_flip() +
   scale_fill_manual(values = c("#fc8d62", "#66c2a5"),
                     labels = c("Yes", "No")) +
   scale_y_continuous(labels = scales::percent) +
@@ -185,7 +251,10 @@ df %>%
        subtitle = "Year: 2020",
        caption = "Data Source: Swedish COVID-19 Data Portal") +
   theme(plot.caption.position = "panel",
-        plot.caption = element_text(hjust = 0))
+        plot.caption = element_text(hjust = 0),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"),
+        legend.background = element_rect(fill="#fffbf0"))
 
 # ggplotly(plot1) %>% 
 #     layout(title = list(text = paste0("Have you found the spread of COVID-19 stressful?",
@@ -269,13 +338,15 @@ surv_long %>%
   theme_light() +
   labs(x = "Survey Answer",
        y = "Total Count",
-       title = "Did you drink alcohol less or more often in the past month?",
+       title = "Did you drink alcohol less or more often in the past month? (by country)",
        subtitle = "Year: 2020",
        caption = "Answer: 1 = much less, 2 = slightly less, 3 = no change, 4 = slightly more, 5 = much more \nData Source: Swedish COVID-19 Data Portal") +
   theme(plot.caption.position = "panel",
         plot.caption = element_text(hjust = 0),
         legend.position = "none",
-        axis.text.y = element_text(size = 8))
+        axis.text.y = element_text(size = 8),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"))
 
 ```
 ```{r alco-age, fig.cap="Alcohol Consumption in Sweden, by Age"}
@@ -300,13 +371,15 @@ surv_long_se %>%
   theme_light() +
   labs(x = "Survey Answer",
        y = "Total Count",
-       title = "Did you drink alcohol less or more often in the past month?",
+       title = "Did you drink alcohol less or more often in the past month? (by age)",
        subtitle = "Year: 2020",
        caption = "Answer: 1 = much less, 2 = slightly less, 3 = no change, 4 = slightly more, 5 = much more \nData Source: Swedish COVID-19 Data Portal") +
   theme(plot.caption.position = "panel",
         plot.caption = element_text(hjust = 0),
         legend.position = "none",
-        axis.text.y = element_text(size = 8))
+        axis.text.y = element_text(size = 8),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"))
 ```
 
 ```{r smoke}
@@ -407,13 +480,32 @@ surv_long_se %>%
 
 #### New Confirmed Cases and Deaths
 
-Sweden has recorded three waves sofar, the two major ones are in the late 2020 to early 2021 and March to June this year and the number of confirmed cases per million people were the highest among its neighbouring countries, Germany, Norway, Denmark, Finland, as shown in the Figure \@ref(fig:newcases). The Swedish government's soft touch approach on dealing with the virus among the European countries has drawn worldwide attention and criticism (ABC news, 2020), and when the third wave hit, Sweden had already opted against lockdowns, instead relying on mostly voluntary measures (Reuters, 2021), the confirm cases recorded in April and May surpassed most of the European countries. From Figure \@ref(fig:newcases), we can also see that, there is more likely to be another wave in the coming months, but the increase in confirmed cases is not yet significant, let's hope the vaccination can be of assistance in flatting the curve. The daily number of deaths per million people seems relatively low in the graph, however, if we take the daily numbers and calculate the cumulative daily number of deaths, Sweden again, is well above its neighbours, see Figure \@ref(fig:newdeaths). For a country that only have 10 million population, only one-eight of the population in Germany, this is very concerning.
+Sweden has recorded three waves so far, the two major ones were in the late 2020 to early 2021 and March to June this year and the number of confirmed cases per million people were the highest among its neighbouring countries, Germany, Norway, Denmark and Finland, as shown in the Figure \@ref(fig:newcases). The main reason for this would be the Swedish government's soft touch approach on dealing with the virus among the European countries, it has drawn worldwide attention and criticism, even scientists called for changes to their covid strategy (ABC news, 2020), and when the third wave hit, Sweden had already opted against lock downs, face masks, instead relying on mostly voluntary measures (Reuters, 2021). The graph also shows the numbers are rising again since July this year, but the increase in confirmed cases is not yet significant, let's hope the vaccination can be of assistance in flatting the curve.
+
+Furthermore, we can also see from Figure \@ref(fig:newcases) that the daily number of deaths per million people in Sweden seems relatively low in comparison with its daily cases, but this could be deceiving. If we take the daily numbers and calculate the cumulative sum of deaths, Sweden again, is well above its neighbours. Its death toll has been increasing drastically than other countries since the beginning of the pandemic, see Figure \@ref(fig:newdeaths). For a country that only have 10 million population, one-eight of the population in Germany, this is very concerning. Watch a video about Swedish COVID strategy below.
+
+<br><br>
+```{r video, fig.cap="The Swedish Model for Fighting COVID-19"}
+embed_youtube(
+  "sJ4xL_aDagM",
+  width = NULL,
+  height = 400,
+  ratio = c("16by9", "4by3"),
+  frameborder = 0,
+  allowfullscreen = TRUE,
+  query = NULL
+)
+```
+
+
 
 <style>
 .html-widget {
     margin: auto;
 }
 </style>
+
+<aside> Figure \@ref(fig:newcases): use the slider bar to filter the date and zoom in to see the daily figure of each country. </aside>
 
 ```{r}
 se <- world %>% 
@@ -431,7 +523,7 @@ se <- world %>%
          people_fully_vaccinated_per_hundred)
 ```
 
-```{r newcases, fig.cap="Daily Confirmed Cases per Million People"}
+```{r newcases, layout="l-body-outset", fig.height = 6, fig.cap="Daily Confirmed Cases per Million People"}
 
 deaths_se <- se %>% 
 select(date, new_deaths_per_million)
@@ -451,7 +543,7 @@ plot1 <- world %>%
              colour = location)) +
   geom_line(size = 0.3) +
   geom_point(size = 0.2) +
-  geom_point(data = deaths_se,
+  geom_line(data = deaths_se,
              aes(x = date,
                  y = new_deaths_per_million,
                  colour = "Deaths in Sweden"),
@@ -461,28 +553,34 @@ plot1 <- world %>%
   labs(x = "Date",
        y = "Daily Confirmed New Cases",
        colour = "Country",
-       title = "Daily New Cases per Million People",
+       title = "Daily New Cases and Deaths per Million People",
        subtitle = "Year: Feb 2020 - Sep 2021") +
   scale_x_date(date_breaks = "1 month") +
   scale_y_continuous(labels = scales::comma) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        axis.text.y = element_text(size = 8))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 6),
+        axis.text.y = element_text(size = 8),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"),
+        legend.background = element_rect(fill="#fffbf0"))
 
-ggplotly(plot1) %>%
-  layout(title = list(text = paste0("Daily New Cases per Million People",
+ggplotly(plot1, 
+         dynamicTicks = TRUE) %>%
+  rangeslider() %>% 
+  layout(title = list(text = paste0("Daily New Cases and Deaths per Million People",
                                     "<br>",
                                     "<sup>",
-                                    "Year: Feb 2020 - Sep 2021",
+                                    "Year: Feb 2020 - Sep 2021, source: Our World Data",
                                     "</sup>")),
-         annotations = list(x = 1, y = -0.5,
-                              text = "Data Source: Our World Data",
-                              showarrow = F,
-                              font=list(size=8)))
+         hovermode = "x")
+         # autosize = FALSE,
+         # width = 500,
+         # height = 500,
+         # margin = "m")
   
 ```
 
-
-```{r newdeaths, fig.cap="Accumulative Daily Deaths"}
+<aside> Figure \@ref(fig:newdeaths): hover over to see the daily number of each country. </aside>
+```{r newdeaths, layout="l-body-outset", fig.height = 5, fig.cap="Accumulative Daily Deaths"}
 plot2 <- world %>% 
   select(location,
          date,
@@ -494,7 +592,7 @@ plot2 <- world %>%
                          "Norway"),
          !is.na(new_deaths_per_million)) %>% 
   group_by(location) %>% 
-  mutate(cumulative_sum = cumsum(new_deaths_per_million)) %>% 
+  mutate(cumulative_sum = round(cumsum(new_deaths_per_million), 0)) %>% 
   ggplot(aes(x = date,
              y = cumulative_sum,
              colour = location)) +
@@ -510,24 +608,117 @@ plot2 <- world %>%
   scale_x_date(date_breaks = "1 month") +
   scale_y_continuous(labels = scales::comma) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        axis.text.y = element_text(size = 8))
+        axis.text.y = element_text(size = 8),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"),
+        legend.background = element_rect(fill="#fffbf0"))
 
 ggplotly(plot2) %>%
   layout(title = list(text = paste0("Accumulative Deaths per Million People",
                                     "<br>",
                                     "<sup>",
-                                    "Year: Feb 2020 - Sep 2021",
-                                    "</sup>")),
-         annotations = list(x = 1, y = -0.5,
-                              text = "Data Source: Our World Data",
-                              showarrow = F,
-                              font=list(size=8)))
+                                    "Year: Feb 2020 - Sep 2021, source: Our World Data",
+                                    "</sup>")))
 ```
+
+
+
+
+
+
 
 #### Vaccination
 
-After a year since the coronavirus emerged, the first vaccines developed by the global effort started being distributed round the world in the late 2020. Sweden began their vaccine programme on the 27th Dec after the approval of Pfizer vaccine. By September this year, Sweden has reached approximately 60% of the population fully vaccinated and almost 70% that had one dose, as shown in Figure \@ref(fig:vacc-se), total of 6,131,967 people out of 10 million population are fully vaccinated and the numbers are still increasing. Despite the fact that the Swedish COVID approach was not the best, but their vaccine roll out is a winner. The deaths rate for the third wave was much lower than the second wave with lockdowns shunned and masks banned. Sweden's vaccine roll out consists of 4 phases, phase 1 is for people who live in care homes for elderly, who have at-home care and who live with home, phase 2 is for people aged 65-69, phase 3 is for people aged 60-64 and phase 4 is for other adults aged 18-59, oldest first (The Local, 2021). Figure \@ref(ref:vacc-age) shows the timeline of fully vaccinate people in each age group and how the roll out imposed, the seniors groups were vaccinated first followed by the younger groups.
+After a year since the coronavirus emerged, the first vaccines developed by the global effort started being distributed around the world in the late 2020. Sweden began their vaccine programme on the 27th Dec after the approval of Pfizer, Figure \@ref(fig:vacc-type) shows the three major types of vaccines administered in Sweden, the most type vaccine administered is Pfizer, followed by Moderna and AstraZaneca which has been discontinued in March following reports of abnormal blood clotting in recipients. 
 
+![source: <a href=https://www.thelocal.com/20210430/sweden-postpones-covid-19-vaccination-target-again/> The Local.</a> A sports hall in Stockholm’s Rinkeby suburb has been transformed into a vaccination hub.](vacc.jpeg)
+
+```{r vacc-type, fig.cap="Type of Vaccines Administered in Sweden"}
+vacc_se$Vaccine[vacc_se$Vaccine == "COM"] <- "Pfizer"
+vacc_se$Vaccine[vacc_se$Vaccine == "MOD"] <- "Moderna"
+vacc_se$Vaccine[vacc_se$Vaccine == "AZ"] <- "AstraZenecar"
+vacc_se$Vaccine[vacc_se$Vaccine == "UNK"] <- "Unknown"
+
+
+vacc_se %>%
+  filter(ReportingCountry == "SE",
+         TargetGroup == "ALL") %>%
+  group_by(Vaccine) %>%
+  summarise(count = sum(SecondDose)) %>%
+  ggplot(aes(area = count,
+             fill = Vaccine,
+             label = paste0(Vaccine, "\n", "Doses: ", prettyNum(count, big.mark = ",")),
+             subgroup = Vaccine)) +
+  geom_treemap() +
+  geom_treemap_subgroup_border(colour = "white", size = 1) +
+  geom_treemap_text(color = "white", size = 18, min.size = 1) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(fill = "Vaccine",
+       title = "Type of Vaccines Adminstered in Sweden",
+       subtitle = "Year: Dec 2020 - Sep 2021",
+       caption = "Data Source: European Centre for Disease Prevention and Control") +
+  theme(axis.text.y = element_text(size = 6),
+        plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"),
+        legend.background = element_rect(fill="#fffbf0"))
+
+```
+
+By September this year, Sweden has reached approximately 60% of the population fully vaccinated and almost 70% that had one dose, as shown in Figure \@ref(fig:vacc-se), total of 6,131,967 people out of 10 million population are fully vaccinated and the numbers are still increasing. Despite the fact that the Swedish COVID approach was not the best, but their vaccine roll out is a winner. The deaths rate for the third wave was much lower than the second wave with lock downs shunned weaker quarantine rules and masks banned and it has been maintain at a similar level. 
+
+
+<aside> Figure \@ref(fig:vacc-se): hover over to see accumulative 7-day numbers for both doses. </aside>
+```{r vacc-se, layout="l-body-outset", fig.height = 5, fig.cap="Accumulative Vaccines Administered"}
+plot3 <- world %>% 
+  select(location,
+         date,
+         people_vaccinated,
+         people_fully_vaccinated) %>% 
+  rename("Fully Vaccinated" = people_fully_vaccinated,
+         "First Dose" = people_vaccinated) %>% 
+  filter(location == "Sweden") %>% 
+  pivot_longer(cols = c("First Dose", 
+                        "Fully Vaccinated"),
+               names_to = "dose",
+               values_to = "entries") %>% 
+  ggplot(aes(x = date,
+             y = entries,
+             group = dose,
+             fill = dose)) +
+  geom_area(alpha = 0.8, size = 0.5, colour = "white") +
+  scale_x_date(date_breaks = "1 month") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_manual(values = c("#66c2a5", "#fc8d62")) +
+  theme_light() +
+  labs(x = "Date",
+       y = "Number of Doses Administered",
+       title = "Accumulative Vaccines Administered, by Month",
+       fill = "Dose",
+       caption = "European Centre for Disease Prevention and Control") +
+  theme(plot.caption.position = "panel",
+        plot.caption = element_text(hjust = 0),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        axis.text.y = element_text(size = 8),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"),
+        legend.background = element_rect(fill="#fffbf0"))
+
+ggplotly(plot3) %>% 
+       layout(title = list(text = paste0("Accumulative Vaccines Administered",
+                                    "<br>",
+                                    "<sup>",
+                                    "Year: Dec 2020 - Sep 2021, source: Our World Data",
+                                    "</sup>")))
+
+```
+
+
+Sweden's vaccine roll out consists of 4 phases, phase 1 is for people who live in care homes for elderly, who have at-home care and who live with home, phase 2 is for people who are aged 65-69, phase 3 is for people are aged 60-64 and phase 4 is for other adults aged 18-59, oldest first (The Local, 2021). Figure \@ref(fig:vacc-age) shows the timeline of fully vaccinate people in each age group, I calculated the cumulative sum of the weekly numbers, so it shows a trend of how the vaccination roll out progresses. As it can be seen from the graph, the seniors groups were vaccinated first followed by the younger groups. A Stockholm based research shows that the effects of vaccinating two of the most vulnerable groups in Sweden successfully reduced the infection rates and deaths (Mestrovic, 2021). This has proved again that vaccination is definitely effective at helping protest against the virus.
+
+
+<aside> Figure \@ref(fig:vacc-age): hover over to see the accumulative weekly number of fully vaccinated number for each age group. </aside>
 ```{r}
 # remove "w" in string
 vacc_se$YearWeekISO <- gsub("[[:alpha:]]", "", vacc_se$YearWeekISO)
@@ -563,53 +754,9 @@ vacc_se$date <- paste(vacc_se$YearWeekISO, vacc_se$month, sep = "/")
 ```
 
 
-```{r vacc-se, fig.cap="Accumulative Vaccines Administered"}
-plot3 <- world %>% 
-  select(location,
-         date,
-         people_vaccinated,
-         people_fully_vaccinated) %>% 
-  rename("Fully Vaccinated" = people_fully_vaccinated,
-         "First Dose" = people_vaccinated) %>% 
-  filter(location == "Sweden") %>% 
-  pivot_longer(cols = c("First Dose", 
-                        "Fully Vaccinated"),
-               names_to = "dose",
-               values_to = "entries") %>% 
-  ggplot(aes(x = date,
-             y = entries,
-             group = dose,
-             fill = dose)) +
-  geom_area(alpha = 0.8, size = 0.5, colour = "white") +
-  scale_x_date(date_breaks = "1 month") +
-  scale_y_continuous(labels = scales::comma) +
-  scale_fill_manual(values = c("#66c2a5", "#fc8d62")) +
-  theme_light() +
-  labs(x = "Date",
-       y = "Number of Doses Administered",
-       title = "Accumulative Vaccines Administered, by Month",
-       fill = "Dose",
-       caption = "European Centre for Disease Prevention and Control") +
-  theme(plot.caption.position = "panel",
-        plot.caption = element_text(hjust = 0),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        axis.text.y = element_text(size = 8))
-
-ggplotly(plot3) %>% 
-       layout(title = list(text = paste0("Accumulative Vaccines Administered, by Month",
-                                    "<br>",
-                                    "<sup>",
-                                    "Year: Dec 2020 - Sep 2021",
-                                    "</sup>")),
-           annotations = list(x = 1, y = -0.5,
-                              text = "Data Source: European Centre for Disease Prevention and Control",
-                              showarrow = F,
-                              font=list(size=8)))
-
-```
 
 
-```{r vacc-age, fig.cap="Weekly Accumulative Number of Fully Vaccinated People"}
+```{r vacc-age, layout="l-body-outset", fig.height = 5, fig.cap="Weekly Accumulative Number of Fully Vaccinated People"}
 
 plot4 <- vacc_se %>% 
   select(date, 
@@ -650,56 +797,27 @@ plot4 <- vacc_se %>%
   theme(plot.caption.position = "panel",
         plot.caption = element_text(hjust = 0),
         axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        axis.text.y = element_text(size = 8)) 
+        axis.text.y = element_text(size = 8),
+        panel.background = element_rect(fill = '#fffbf0'),
+        plot.background = element_rect(fill="#fffbf0"),
+        legend.background = element_rect(fill="#fffbf0")) 
 
 ggplotly(plot4) %>%
-       layout(title = list(text = paste0("Weekly Accumulative Number of Fully Vaccinated People, by Age",
+       layout(title = list(text = paste0("Weekly Accumulative Number of Fully Vaccinated People",
                                     "<br>",
                                     "<sup>",
-                                    "Year: Dec 2020 - Sep 2021, date is year-week/month",
+                                    "Year: Dec 2020 - Sep 2021, date is year-week/month, source: ECDC",
                                     "</sup>")))
 
 ```
 
 
-```{r}
-# vacc_se$Vaccine[vacc_se$Vaccine == "COM"] <- "Pfizer"
-# vacc_se$Vaccine[vacc_se$Vaccine == "MOD"] <- "Moderna"
-# vacc_se$Vaccine[vacc_se$Vaccine == "AZ"] <- "AstraZenecar"
-# vacc_se$Vaccine[vacc_se$Vaccine == "UNK"] <- "Unknown"
-# 
-# 
-# vacc_se %>% 
-#   filter(ReportingCountry == "SE",
-#          TargetGroup == "ALL") %>% 
-#   group_by(Vaccine) %>% 
-#   summarise(count = sum(SecondDose)) %>% 
-#   ggplot(aes(area = count,
-#              fill = Vaccine,
-#              label = paste0(Vaccine, "\n", prettyNum(count, big.mark = ",")),
-#              subgroup = Vaccine)) +
-#   geom_treemap() +
-#   geom_treemap_subgroup_border(colour = "white", size = 1) +
-#   geom_treemap_text(color = "white", size = 18, min.size = 1) +
-#   scale_fill_brewer(palette = "Set2") +
-#   labs(fill = "Vaccine",
-#        title = "Type of Vaccines Adminstered in Sweden",
-#        subtitle = "Year: Dec 2020 - Sep 2021",
-#        caption = "Data Source: Swedish COVID-19 Data Portal") +
-#   theme(axis.text.y = element_text(size = 6),
-#         plot.caption.position = "panel",
-#         plot.caption = element_text(hjust = 0)) 
 
-```
+<br><br>
 
-
-
-
-
-
-
-## Reference
-
+<button type="button" class="collapsible">References</button>
+<div class="content">
+<p>
 ECDC, European Centre for Disease Prevention and Control. (2021, September, 9). "Data on COVID-19 vaccination in the EU/EEA", <https://www.ecdc.europa.eu/en/publications-data/data-covid-19-vaccination-eu-eea>
 
 Mathieu, E., Ritchie, H., Ortiz-Ospina, E. et al. A global database of COVID-19 vaccinations. Nat Hum Behav (2021)
@@ -715,3 +833,57 @@ ABC news. (2020, Nove, 14). "Sweden maintains controversial COVID-19 strategy de
 Reuters. (2021, May). "Third COVID-19 wave is ebbing fast in Sweden, expert says", <https://nationalpost.com/pmn/health-pmn/third-covid-19-wave-is-ebbing-fast-in-sweden-expert-says>
 
 The Local. (2021, April 14). "EXPLAINED: When will I get my Covid-19 vaccination in Sweden?", <https://www.thelocal.se/20210414/explained-when-will-i-get-my-covid-19-vaccination-in-sweden/>
+
+Mestrovic, Tomislav. (2021, September 9). News Medical Life Sciences. "Early impact of COVID-19 vaccines in Stockholm, Sweden", <https://www.news-medical.net/news/20210909/Early-impact-of-COVID-19-vaccines-in-Stockholm-Sweden.aspx>
+
+R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria.
+URL https://www.R-project.org/.
+
+Kirill Müller (2020). here: A Simpler Way to Find Your Files. R package version 1.0.1. https://CRAN.R-project.org/package=here
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York, 2016.
+
+Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2021). dplyr: A Grammar of Data Manipulation. R package version 1.0.6.
+https://CRAN.R-project.org/package=dplyr
+
+Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686, https://doi.org/10.21105/joss.01686
+
+Garrett Grolemund, Hadley Wickham (2011). Dates and Times Made Easy with lubridate. Journal of Statistical Software, 40(3), 1-25. URL
+https://www.jstatsoft.org/v40/i03/.
+
+Nicholas Tierney, Di Cook, Miles McBain and Colin Fay (2021). naniar: Data Structures, Summaries, and Visualisations for Missing Data. R
+package version 0.6.1. https://CRAN.R-project.org/package=naniar
+
+Hao Zhu (2021). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. R package version 1.3.4.
+https://CRAN.R-project.org/package=kableExtra
+
+Yihui Xie, Joe Cheng and Xianying Tan (2021). DT: A Wrapper of the JavaScript Library 'DataTables'. R package version 0.18.
+https://CRAN.R-project.org/package=DT
+
+South, Andy 2011 rworldmap: A New R package for Mapping Global Data. The R Journal Vol. 3/1 : 35-43.
+
+C. Sievert. Interactive Web-Based Data Visualization with R, plotly, and shiny. Chapman and Hall/CRC Florida, 2020.
+
+Ian Lyttle (2020). vembedr: Embed Video in HTML. R package version 0.1.4. https://CRAN.R-project.org/package=vembedr
+</p>
+</div>
+
+
+```{js}
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
+}
+```
+
+

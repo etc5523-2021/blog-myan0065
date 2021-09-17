@@ -85,12 +85,6 @@ d-article a {
 }
   
   
-.l-body-outset {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 
 h1, h2, h3, h4, h5, h6, .posts-list .post-preview h2, .posts-list .description h2 {
     font-family: 'Fira Mono', monospace;

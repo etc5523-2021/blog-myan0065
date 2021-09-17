@@ -8,6 +8,7 @@ categories:
   - formattable
   - plotly
   - COVID-19
+  - Monash University
 author:
   - name: Jaffie Yang
     url: https://etc5523-2021.github.io/blog-myan0065/about.html
@@ -17,13 +18,11 @@ date: 08-29-2021
 output:
   distill::distill_article:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     self_contained: false
 ---
 
-```{css, echo = FALSE}
 
-```
 
 
 ```{r setup, include=FALSE}
@@ -32,6 +31,46 @@ knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
                       out.width = "80%",
                       fig.align = "center")
+```
+
+```{css}
+.collapsible {
+  background-color: #fffbf0;
+  color: #325c59;
+  font-family: 'Fira Mono', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 24px;
+}
+
+
+.active, .collapsible:hover {
+  background-color: #fffbf0;
+}
+
+.content {
+  padding: 0 18px;
+  background-color: #fffbf0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+
+.collapsible:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #325c59;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
 ```
 
 ```{r packages, message = FALSE}
@@ -417,8 +456,10 @@ To sum up, the Swiss government has done a good job on controlling the spread of
 
 <br><br>
 
-## References
 
+<button type="button" class="collapsible">References</button>
+<div class="content">
+<p>
 opendata.swiss. (2021, August 27). "COVID-19 Switzerland", <https://opendata.swiss/en/dataset/covid-19-schweiz>
 
 SWI swissinfo.ch. (2021, August 18). "New head of Swiss Covid-19 taskforce: ‘We’re in a very difficult situation'", <https://www.swissinfo.ch/eng/new-leader-of-swiss-covid-19-taskforce---we-are-in-a-very-difficult-situation-/46877048>
@@ -467,6 +508,24 @@ https://CRAN.R-project.org/package=doBy
 
 Lukasz Komsta and Frederick Novomestky (2015). moments: Moments, cumulants, skewness, kurtosis and related tests. R package version
 0.14. https://CRAN.R-project.org/package=moments
+</p>
+</div> 
   
-  
-  
+
+```{js}
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
+}
+```
+
